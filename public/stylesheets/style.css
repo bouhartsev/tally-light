@@ -1,0 +1,48 @@
+body {
+  padding: 10px;
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  text-align: center;
+  position: relative;
+}
+
+a {
+  color: #00B7FF;
+}
+
+.nums_input {
+  margin: 10px;
+}
+
+.camera {
+  cursor: pointer;
+
+  width: 200px;
+  height: 200px;
+  color: white;
+  background: grey;
+  font-size: 50px;
+
+  opacity: 0.8;
+  margin: 20px;
+
+  box-sizing: border-box;
+  max-width: 80%;
+}
+.camera:hover {
+  opacity: 1;
+}
+.camera.preview {
+  background: green;
+}
+.camera.onair {
+  background: red;
+}
+
+.footer {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  position: sticky;
+  bottom: 0;
+  background: white;
+}

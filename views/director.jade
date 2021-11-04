@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  //- h1= title
+  //- p Welcome to #{title}
+  label(for="nums") Количество камер
+  input.nums_input(type="number",name="nums",placeholder="например, 3",value="0",min="0",max="255")
+  button#change поменять
+
+  div.cameras
+
+  footer.footer
+    button#reset(type="reset") Не в эфире
+
+  script(src="/javascripts/director.js")
