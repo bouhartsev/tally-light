@@ -19,8 +19,10 @@ module.exports = function (server) {
             number = -1;
         }
         else if (url_arr.length>1) {
-            if (Number.isInteger(url_arr[1])) {
-                num = Number(url_arr[1]);
+            num = parseInt(url_arr[1]);
+            console.log(num);
+            if (Number.isInteger(num)) {
+                console.log(clients[id]['quantity']);
                 if (num>0 && num<=clients[id]['quantity']) {
                     number = num;
                 }
@@ -34,12 +36,14 @@ module.exports = function (server) {
         }
         // add camera
         else if (number>0) {
-            if (!(number in clients[id]['cameras'][number])) clients[id]['cameras'][number]=[];
+            if (!(number in clients[id]['cameras'])) clients[id]['cameras'][number]=[];
             clients[id]['cameras'][number].push(ws);
             if (number==clients[id]['preview']) send(ws, 'preview');
             if (number==clients[id]['onair']) send(ws, 'onair');
+            // send message to directors
         }
         else {
+            // send "not exists"-?
             ws.close(4000, 'not exists');
         }
 
@@ -51,15 +55,19 @@ module.exports = function (server) {
             for (let i=0; i<clients[id]['directors'].length; i++) {
                 send(clients[id]['directors'][i], message);
             }
-            if (message[0]!="quantity") {
-                for (let i=0; i<clients[id]['cameras'][message[1]]; i++) {
-                    send(clients[id]['cameras'][message[1]][i], message[0]);
-                }
-            }
             // удалять камеры при изменении количества на сайте, удалять данные из preview и onair, отсоединять людей
             for (let key in message) {
+                let value = message[key];
+
+                // Если null - ?
+                // else if (key!="quantity")
+                if (value in clients[id]['cameras']) {
+                    for (let i=0; i<clients[id]['cameras'][value].length; i++) {
+                        send(clients[id]['cameras'][value][i], message);
+                    }
+                }
                 // check value!
-                clients[id][key] = message[key];
+                clients[id][key] = value;
             }
         });
 
@@ -67,8 +75,10 @@ module.exports = function (server) {
             console.log('Close WS connetion: ' + id + ", " + number);
             if (number==-1)
                 clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
-            else if (number>0)
+            else if (number>0) {
                 clients[id]['cameras'] = clients[id]['cameras'][number].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
+                // send message to directors!
+            }
         });
 
     });

@@ -4,13 +4,17 @@
 }
 
 body {
-  padding: 10px;
   font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
-  text-align: center;
-  position: relative;
-
+  overflow-y: overlay;
   background: var(--color-bg);
   color: var(--color-fg);
+  text-align: center;
+  position: relative;
+  margin: 0;
+}
+
+main {
+  padding: 30px;
 }
 
 a {
@@ -47,11 +51,11 @@ a {
 .camera:hover {
   opacity: 1;
 }
-.camera.preview {
+.preview {
   background: green;
   color: var(--color-fg);
 }
-.camera.onair {
+.onair {
   background: red;
   color: var(--color-fg);
 }
@@ -63,4 +67,18 @@ a {
   position: sticky;
   bottom: 0;
   background: inherit;
+}
+
+.centered {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+
+  font-size: 5vw;
 }

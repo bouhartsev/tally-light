@@ -1,13 +1,6 @@
 document.addEventListener("DOMContentLoaded", function() {
-    let HOST = location.href.replace(/^http/, 'ws')
-    let ws = new WebSocket(HOST);
     let cams = 0;
-
-    function send(key, value) {
-        // if (ws.bufferedAmount == 0) // нужно ли?
-        ws.send(JSON.stringify({[key]: value}));
-    }
-
+    
     function addClick(button) {
         button.addEventListener('click', function(event) {
             let cam = event.srcElement.id;
@@ -30,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function() {
         send("onair", null);
     });
 
-    function setData(key, value) {
+    setData = function (key, value) {
         if (key=="quantity") {
             if (value!=cams) {
                 document.querySelector("input").value = value;
@@ -63,13 +56,5 @@ document.addEventListener("DOMContentLoaded", function() {
             });
             if (value!=null) document.getElementById(value).classList.add(key);
         }
-
     }
-
-    ws.onmessage = function(event) {
-        let mes = JSON.parse(event.data);
-        for (let key in mes) {
-            setData(key, mes[key]);
-        }
-    };
 });
