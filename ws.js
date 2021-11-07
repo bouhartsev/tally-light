@@ -5,6 +5,7 @@ module.exports = function (server) {
     var clients = {};
 
     function send(client, message) {
+        if (typeof(message) == 'string') message = {'status':message};
         client.send(JSON.stringify(message));
     }
 
@@ -20,9 +21,7 @@ module.exports = function (server) {
         }
         else if (url_arr.length>1) {
             num = parseInt(url_arr[1]);
-            console.log(num);
             if (Number.isInteger(num)) {
-                console.log(clients[id]['quantity']);
                 if (num>0 && num<=clients[id]['quantity']) {
                     number = num;
                 }
@@ -33,18 +32,26 @@ module.exports = function (server) {
         if (number==-1) {
             clients[id]['directors'].push(ws);
             send(ws,{'quantity':clients[id]['quantity'], 'preview':clients[id]['preview'], 'onair':clients[id]['onair']});
+            for (let key in clients[id]['cameras']) {
+                send(ws, {'connected':key});
+            }
         }
         // add camera
         else if (number>0) {
-            if (!(number in clients[id]['cameras'])) clients[id]['cameras'][number]=[];
-            clients[id]['cameras'][number].push(ws);
-            if (number==clients[id]['preview']) send(ws, 'preview');
-            if (number==clients[id]['onair']) send(ws, 'onair');
+            if (!(number in clients[id]['cameras']))  {
+                clients[id]['cameras'][number]=[];
+            }
             // send message to directors
+            for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length; i++) {
+                send(clients[id]['directors'][i], {'connected':number});
+            }
+            clients[id]['cameras'][number].push(ws);
+            if (number==clients[id]['onair']) send(ws, 'onair');
+            if (number==clients[id]['preview']) send(ws, 'preview');
         }
         else {
-            // send "not exists"-?
-            ws.close(4000, 'not exists');
+            // send - ?
+            ws.close(4000, 'not exist');
         }
 
 
@@ -63,7 +70,12 @@ module.exports = function (server) {
                 // else if (key!="quantity")
                 if (value in clients[id]['cameras']) {
                     for (let i=0; i<clients[id]['cameras'][value].length; i++) {
-                        send(clients[id]['cameras'][value][i], message);
+                        send(clients[id]['cameras'][value][i], key);
+                    }
+                }
+                if (((key=="preview"&&clients[id]["onair"]!=clients[id][key]) || key=="onair") && clients[id][key]!=null && (clients[id][key] in clients[id]['cameras'])) {
+                    for (let i=0; i<clients[id]['cameras'][clients[id][key]].length; i++) {
+                        send(clients[id]['cameras'][clients[id][key]][i], "connected");
                     }
                 }
                 // check value!
@@ -76,8 +88,11 @@ module.exports = function (server) {
             if (number==-1)
                 clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
             else if (number>0) {
-                clients[id]['cameras'] = clients[id]['cameras'][number].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
-                // send message to directors!
+                clients[id]['cameras'][number] = clients[id]['cameras'][number].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
+                // send message to directors
+                for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length; i++) {
+                    send(clients[id]['directors'][i], {'disconnected':number});
+                }
             }
         });
 

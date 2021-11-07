@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", function() {
     
     function addClick(button) {
         button.addEventListener('click', function(event) {
-            let cam = event.srcElement.id;
+            let cam = parseInt(event.srcElement.id);
             if (!event.srcElement.classList.contains("onair")) {
                 if (event.srcElement.classList.contains("preview")) send("onair", cam);
                 else send("preview", cam);
@@ -50,11 +50,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 }
             }
         }
-        else {
+        else if (key=="preview" || key=="onair") {
             document.querySelectorAll(".camera").forEach(function(button) {
                 button.classList.remove(key);
             });
             if (value!=null) document.getElementById(value).classList.add(key);
+        }
+        else {
+            console.log(key, value);
         }
     }
 });
