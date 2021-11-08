@@ -51,13 +51,17 @@ a {
 .camera:hover {
   opacity: 1;
 }
+
+.preview, .onair {
+  color: var(--color-fg);
+  position: relative;
+}
+
 .preview {
   background: green;
-  color: var(--color-fg);
 }
 .onair {
   background: red;
-  color: var(--color-fg);
 }
 
 .footer {
@@ -81,4 +85,24 @@ a {
   height: 100vh;
 
   font-size: 5vw;
+}
+
+.not-exist, .disconnected {
+  position: relative;
+}
+.not-exist::after, .disconnected::after {
+  color: orange;
+}
+
+.not-exist::after {
+  content: " doesn't exist";
+}
+.disconnected::after {
+  content: " is disconnected";
+}
+.preview h2::after {
+  content: "preview";
+}
+.onair h2::after {
+  content: "on air";
 }
