@@ -33,7 +33,7 @@ module.exports = function (server) {
             clients[id]['directors'].push(ws);
             send(ws,{'quantity':clients[id]['quantity'], 'preview':clients[id]['preview'], 'onair':clients[id]['onair']});
             for (let key in clients[id]['cameras']) {
-                send(ws, {'connected':key});
+                if (clients[id]['cameras'][key].length) send(ws, {'connected':key});
             }
         }
         // add camera
@@ -66,31 +66,43 @@ module.exports = function (server) {
             for (let key in message) {
                 let value = message[key];
 
-                // Если null - ?
-                // else if (key!="quantity")
-                if (value in clients[id]['cameras']) {
-                    for (let i=0; i<clients[id]['cameras'][value].length; i++) {
-                        send(clients[id]['cameras'][value][i], key);
+                // Нужно ли проверять ключ и значение, а также на null - ?
+                
+                if (key=="quantity" && value<clients[id][key]) {
+                    Object.keys(clients[id]["cameras"]).filter(item => item>value).forEach(cam_key => {
+                        clients[id]["cameras"][cam_key].forEach(el => {
+                            el.close(4000, "not exist");
+                        });
+                    });
+                    if (clients[id]["preview"]>value) clients[id]["preview"] = null;
+                    if (clients[id]["onair"]>value) clients[id]["onair"]=null;
+                }
+                else { // if (key!="quantity")
+                    if (value in clients[id]['cameras']) {
+                        for (let i=0; i<clients[id]['cameras'][value].length; i++) {
+                            send(clients[id]['cameras'][value][i], key);
+                        }
+                    }
+                    if (((key=="preview"&&clients[id]["onair"]!=clients[id][key]) || key=="onair") && clients[id][key]!=null && (clients[id][key] in clients[id]['cameras'])) {
+                        for (let i=0; i<clients[id]['cameras'][clients[id][key]].length; i++) {
+                            send(clients[id]['cameras'][clients[id][key]][i], "connected");
+                        }
                     }
                 }
-                if (((key=="preview"&&clients[id]["onair"]!=clients[id][key]) || key=="onair") && clients[id][key]!=null && (clients[id][key] in clients[id]['cameras'])) {
-                    for (let i=0; i<clients[id]['cameras'][clients[id][key]].length; i++) {
-                        send(clients[id]['cameras'][clients[id][key]][i], "connected");
-                    }
-                }
-                // check value!
+
                 clients[id][key] = value;
             }
         });
 
-        ws.on('close', function () {
+        ws.on('close', function (code) {
             console.log('Close WS connetion: ' + id + ", " + number);
             if (number==-1)
                 clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
             else if (number>0) {
                 clients[id]['cameras'][number] = clients[id]['cameras'][number].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
+                console.log("deleted");
                 // send message to directors
-                for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length; i++) {
+                for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length && code!=4000; i++) {
                     send(clients[id]['directors'][i], {'disconnected':number});
                 }
             }

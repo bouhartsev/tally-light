@@ -1,6 +1,10 @@
 :root {
   --color-fg: whitesmoke;
   --color-bg: #002137;
+
+  --color-green: green; /* #2EC11F */
+  --color-red: #E8252F;
+  --color-orange: #EC7C26;
 }
 
 body {
@@ -25,6 +29,11 @@ a {
   margin: 10px;
 }
 
+button {
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
 .cameras {
   margin-top: 20px;
   display: grid;
@@ -34,7 +43,6 @@ a {
 
 .camera {
   display: block;
-  cursor: pointer;
 
   /* width: 200px;
   height: 200px; */
@@ -45,8 +53,7 @@ a {
   opacity: 0.9;
   /* margin: 20px; */
 
-  box-sizing: border-box;
-  padding: 20px;
+  padding: 25px 20px;
 }
 .camera:hover {
   opacity: 1;
@@ -58,10 +65,14 @@ a {
 }
 
 .preview {
-  background: green;
+  background: var(--color-green);
 }
 .onair {
-  background: red;
+  background: var(--color-red);
+}
+
+.not-connected {
+  box-shadow: 0 0 0 10px var(--color-orange) inset;
 }
 
 .footer {
@@ -91,7 +102,7 @@ a {
   position: relative;
 }
 .not-exist::after, .disconnected::after {
-  color: orange;
+  color: var(--color-orange);
 }
 
 .not-exist::after {

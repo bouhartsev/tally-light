@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
     ws.onclose = function(event){
-        if (event.reason=="not exist") addition.classList.add("not-exist");
+        if (event.code==4000) addition.classList.add("not-exist");
         else addition.classList.add("disconnected");
         setData("status", "offline");
     }

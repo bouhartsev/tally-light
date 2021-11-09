@@ -41,6 +41,7 @@ document.addEventListener("DOMContentLoaded", function() {
                         cams++;
                         newCam = document.createElement('button');
                         newCam.classList.add("camera");
+                        newCam.classList.add("not-connected");
                         newCam.id = cams;
                         newCam.innerText = cams;
                         addClick(newCam);
@@ -55,6 +56,12 @@ document.addEventListener("DOMContentLoaded", function() {
                 button.classList.remove(key);
             });
             if (value!=null) document.getElementById(value).classList.add(key);
+        }
+        else if (key=="connected") {
+            document.getElementById(value).classList.remove("not-connected");
+        }
+        else if (key=="disconnected") {
+            document.getElementById(value).classList.add("not-connected");
         }
         else {
             console.log(key, value);
