@@ -29,6 +29,8 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
+server.keepAliveTimeout = 0;
+
 let wss = require("../ws.js")(server);
 
 /**

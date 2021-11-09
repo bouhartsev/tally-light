@@ -66,5 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
         else {
             console.log(key, value);
         }
+
+        // ADD onopen & onclose!
     }
 });

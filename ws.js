@@ -1,4 +1,7 @@
 module.exports = function (server) {
+    const { v4 } = require('uuid');
+    const uuid = v4;
+
     const { Server } = require('ws');
     const wss = new Server({ server });
 
@@ -10,6 +13,7 @@ module.exports = function (server) {
     }
 
     wss.on('connection', function (ws, req) {
+        ws.id = uuid();
         let url_arr = req.url.split("/").filter((val) => val);
         let id = url_arr[0];
         console.log("New WS connection: " + id);
@@ -99,8 +103,8 @@ module.exports = function (server) {
             if (number==-1)
                 clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
             else if (number>0) {
-                clients[id]['cameras'][number] = clients[id]['cameras'][number].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
-                console.log("deleted");
+                // console.log(ws);
+                clients[id]['cameras'][number] = clients[id]['cameras'][number].filter(item => item.id!=ws.id);
                 // send message to directors
                 for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length && code!=4000; i++) {
                     send(clients[id]['directors'][i], {'disconnected':number});
