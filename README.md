@@ -1,2 +1,2 @@
-# tally-light
+# tally-lights
 Tally Lights online
