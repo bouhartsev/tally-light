@@ -5,8 +5,9 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('director', { title: 'Director Page' });
 });
-router.all('/*', function(req, res, next) {
-  res.render('camera', { title: 'Camera Page' });
+router.all('/:id', function(req, res, next) {
+  let id = req.params.id;
+  res.render('camera', { title: 'Camera '+id });
 });
 
 
