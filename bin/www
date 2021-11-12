@@ -4,7 +4,7 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('../app_http');
 var debug = require('debug')('tally-lights:server');
 var http = require('http');
 
@@ -29,7 +29,7 @@ server.listen(port);
 server.on('error', onError);
 server.on('listening', onListening);
 
-let wss = require("../ws.js")(server);
+let wss = require("../app_ws")(server);
 
 /**
  * Normalize a port into a number, string, or false.
