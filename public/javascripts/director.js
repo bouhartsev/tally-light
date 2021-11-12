@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.querySelector("#change").addEventListener('click', function(event) {
         let cams_temp = parseInt(document.querySelector("input").value);
-        if ((cams_temp || cams_temp===0) && cams_temp!=cams) send("quantity", cams_temp);
+        if ((cams_temp || cams_temp===0) && cams_temp!=cams) {
+            if (cams_temp>=0 && cams_temp<=255) send("quantity", cams_temp);
+        }
     });
 
     document.querySelector("#reset").addEventListener('click', function(event) {
