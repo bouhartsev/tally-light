@@ -25,5 +25,6 @@ ws.onclose = function(event){
 ws.onopen = function(event) {
     addition.classList.remove("not-exist");
     addition.classList.remove("disconnected");
+    document.querySelector(".loading").classList.remove("loading");
     setData("status", "connected");
 }

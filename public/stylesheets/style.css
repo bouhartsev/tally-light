@@ -32,6 +32,48 @@ a {
 button {
   cursor: pointer;
   box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+}
+
+.loading .cameras {
+  height: 100px;
+}
+
+.loading .cameras::after {
+  content: "";
+  display: block;
+
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  margin: auto;
+
+  width: 20px;
+  height: 20px;
+  /* box-sizing: border-box; */
+
+  border-radius: 100%;
+  background: var(--color-red);
+  box-shadow: 0 0 0 20px var(--color-red);
+  border-color: var(--color-bg);
+  border-style: solid;
+  border-width: 52px;
+
+  animation: load-anim 1.6s infinite linear;
+}
+
+@keyframes load-anim {
+  0%{
+    border-width: 0px;
+    box-shadow: 0 0 0 0px var(--color-red);
+  }
+  10% {
+    border-width: 0px;
+    box-shadow: 0 0 0 5px var(--color-red);
+  }
+  100%{
+    border-width: 50px;
+    box-shadow: 0 0 -50px 5px var(--color-red);
+  }
 }
 
 .cameras {
@@ -39,6 +81,7 @@ button {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
   grid-gap: 2vw;
+  position: relative;
 }
 
 .camera {

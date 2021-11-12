@@ -1,12 +1,10 @@
 extends layout-ws
 
 block content
-  main
-    //- h1= title
-    //- p Welcome to #{title}
-    label(for="nums") Количество камер
-    input.nums_input(type="number",name="nums",placeholder="например, 3",value="0",min="0",max="255")
-    button#change поменять
+  main.loading
+    label(for="nums") Cameras quantity
+    input.nums_input(type="number",name="nums",placeholder="e.g. 3",value="0",min="0",max="255")
+    button#change change
 
     div.cameras
 
@@ -14,7 +12,7 @@ block content
     .status
       a(href="/") Tally Lights
       | 
-    button#reset(type="reset") Не в эфире
+    button#reset(type="reset") Not on air
     .copyright
       | © 
       a(href="//bouhartsev.top/") Matvey Bouhartsev
