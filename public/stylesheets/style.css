@@ -22,7 +22,7 @@ main {
 }
 
 a {
-  color: var(--color-fg);
+  color: inherit;
 }
 
 .nums_input {
@@ -82,6 +82,15 @@ button {
   position: sticky;
   bottom: 0;
   background: inherit;
+}
+
+.status, .copyright {
+	display: inline-block;
+	white-space: nowrap
+}
+
+#reset {
+  margin: 10px 20px;
 }
 
 .centered {

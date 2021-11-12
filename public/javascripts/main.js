@@ -1,6 +1,7 @@
-// document.addEventListener("DOMContentLoaded", function() {
 let HOST = location.href.replace(/^http/, 'ws')
 let ws = new WebSocket(HOST);
+
+let addition = null;
 
 let setData = function(key, value) {return}
 
@@ -15,4 +16,14 @@ ws.onmessage = function(event) {
         setData(key, mes[key]);
     }
 };
-// });
+
+ws.onclose = function(event){
+    if (event.code==4000) addition.classList.add("not-exist");
+    else addition.classList.add("disconnected");
+    setData("status", "offline");
+}
+ws.onopen = function(event) {
+    addition.classList.remove("not-exist");
+    addition.classList.remove("disconnected");
+    setData("status", "connected");
+}

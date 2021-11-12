@@ -1,5 +1,7 @@
 document.addEventListener("DOMContentLoaded", function() {
     let cams = 0;
+
+    addition = document.querySelector(".status");
     
     function addClick(button) {
         button.addEventListener('click', function(event) {
@@ -66,7 +68,5 @@ document.addEventListener("DOMContentLoaded", function() {
         else {
             console.log(key, value);
         }
-
-        // ADD onopen & onclose!
     }
 });

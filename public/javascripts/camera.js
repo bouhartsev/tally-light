@@ -1,15 +1,14 @@
 document.addEventListener("DOMContentLoaded", function () {
-    let addition = document.querySelector("h1>span");
+    addition = document.querySelector("h1>span");
     let description = document.querySelector("h2");
 
     // add from url to html
     let number = location.pathname.split('/');
-    number = number[number.length-1];
+    number = number[2];
     if (parseInt(number)) number = parseInt(number);
-    addition.innerText = number;
+    // addition.innerText = number; // теперь в роутере
 
     setData = function (key, value) {
-        console.log(key, value);
         switch (value) {
             case 'preview':
             case 'onair':
@@ -20,19 +19,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.body.classList.remove("preview");
                 document.body.classList.remove("onair");
                 description.innerText = value;
+                console.log(key, value);
                 break;
         }
     }
-    ws.onclose = function(event){
-        if (event.code==4000) addition.classList.add("not-exist");
-        else addition.classList.add("disconnected");
-        setData("status", "offline");
-    }
-    ws.onopen = function(event) {
-        addition.classList.remove("not-exist");
-        addition.classList.remove("disconnected");
-        setData("status", "connected");
-    }
+    
 
     // offline (is disconnected - разорвано соединение - или doesn't exist - не существует), connected, preview, onair
 });

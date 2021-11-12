@@ -7,7 +7,7 @@ router.get('/', function(req, res, next) {
 });
 router.all('/:id', function(req, res, next) {
   let id = req.params.id;
-  res.render('camera', { title: 'Camera '+id });
+  res.render('camera', { title: 'Camera '+id, cam_id: id });
 });
 
 
