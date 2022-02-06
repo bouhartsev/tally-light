@@ -5,5 +5,8 @@ var router = express.Router();
 router.get('/', function(req, res, next) {
   res.render('index', { title: 'Tally Lights Online' });
 });
+router.get('/new', function(req, res, next) {
+  res.render('settings', { title: 'Settings Page' });
+});
 
 module.exports = router;

@@ -1,0 +1,15 @@
+extends layout
+
+block content
+  main
+    //- .loading
+    form(action="", method="post")
+        label(for="name") Project title 
+        input.name_input(type="text",name="name",placeholder="e.g. project",pattern="[a-z0-9-]{3,18}",minlength="3",maxlength="18",required)
+        //- p Actual title: 
+        //-     span.name_result
+        label(for="nums") Cameras quantity
+        input.nums_input(type="number",name="nums",placeholder="e.g. 3",value="0",min="1",max="255",required)
+        button#change(type="submit") change
+block scripts
+    script(src="/javascripts/settings.js",defer)

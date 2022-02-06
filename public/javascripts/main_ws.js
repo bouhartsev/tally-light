@@ -22,9 +22,10 @@ ws.onclose = function(event){
     else addition.classList.add("disconnected");
     setData("status", "offline");
 }
+
 ws.onopen = function(event) {
-    addition.classList.remove("not-exist");
-    addition.classList.remove("disconnected");
-    document.querySelector(".loading").classList.remove("loading");
+    addition?.classList.remove("not-exist");
+    addition?.classList.remove("disconnected");
+    document.querySelector(".loading")?.classList.remove("loading");
     setData("status", "connected");
 }
