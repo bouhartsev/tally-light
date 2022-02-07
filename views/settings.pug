@@ -1,15 +1,17 @@
-extends layout
+extends layout-ws
 
 block content
   main
     //- .loading
     form(action="", method="post")
-        label(for="name") Project title 
-        input.name_input(type="text",name="name",placeholder="e.g. project",pattern="[a-z0-9-]{3,18}",minlength="3",maxlength="18",required)
-        //- p Actual title: 
-        //-     span.name_result
+        label(for="title") Project title 
+            input.name_input(type="text",name="title",placeholder="e.g. project",required,autocomplete="false")
+        //- ,minlength="3",maxlength="18",pattern="[a-z0-9-]{3,18}",title="Only digits, lowercase letters and dashes"
+        p.name_result
         label(for="nums") Cameras quantity
-        input.nums_input(type="number",name="nums",placeholder="e.g. 3",value="0",min="1",max="255",required)
+            input.nums_input(type="number",name="nums",placeholder="e.g. 3",value="0",min="1",max="255",required)
         button#change(type="submit") change
-block scripts
+prepend scripts
     script(src="/javascripts/settings.js",defer)
+append head
+    script(async, defer, src="https://cdn.jsdelivr.net/npm/transliteration@2.1.8/dist/browser/bundle.umd.min.js")

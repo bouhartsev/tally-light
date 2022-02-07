@@ -13,7 +13,7 @@ let send = function(key, value) {
 ws.onmessage = function(event) {
     let mes = JSON.parse(event.data);
     for (let key in mes) {
-        setData(key, mes[key]);
+        setData(key, mes[key]); // if key!='change_title'
     }
 };
 

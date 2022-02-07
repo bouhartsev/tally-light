@@ -139,10 +139,13 @@ button {
 .status, .copyright {
 	white-space: nowrap;
 }
-
+/* 
 .name_input:invalid {
   border: red solid 3px;
-}
+} */
+/* .name_result:not(:empty)::before {
+  content: 'Actual title: ';
+} */
 
 #reset {
   margin: 10px 5px;

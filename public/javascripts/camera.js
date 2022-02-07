@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 document.body.classList.add(value);
                 description.innerText = '';
                 break;
-            default: // connected
+            default: // connected or offline
                 document.body.classList.remove("preview");
                 document.body.classList.remove("onair");
                 description.innerText = value;
