@@ -2,8 +2,9 @@ module.exports = function (server) {
     const { v4 } = require('uuid');
     const uuid = v4;
 
-    const { Server } = require('ws');
-    const wss = new Server({ server });
+    // const { Server } = require('ws');
+    // const wss = new Server({ server });
+    const wss = require('socket.io')(server);
 
     var clients = {};
 
@@ -12,8 +13,12 @@ module.exports = function (server) {
         client.send(JSON.stringify(message));
     }
 
-    wss.on('connection', function (ws, req) {
-        ws.id = uuid();
+    // wss.on('connection', function (ws, req) {
+    wss.on('connection', function (socket) {
+        // ws.id = uuid();
+        const ws = socket;
+        const req = {url: socket.handshake.headers.referer.split(socket.handshake.headers.host)[1]}; // FIX IT
+
         let url_arr = req.url.split("/").filter((val) => val);
         let id = url_arr[0];
         console.log("New WS connection: " + id);
@@ -55,7 +60,8 @@ module.exports = function (server) {
         }
         else {
             // send - ?
-            ws.close(4000, 'not exist');
+            // ws.close(4000, 'not exist');
+            socket.disconnect(true);
         }
 
 
@@ -75,7 +81,8 @@ module.exports = function (server) {
                 if (key=="quantity" && value<clients[id][key]) {
                     Object.keys(clients[id]["cameras"]).filter(item => item>value).forEach(cam_key => {
                         clients[id]["cameras"][cam_key].forEach(el => {
-                            el.close(4000, "not exist");
+                            // el.close(4000, "not exist");
+                            el.disconnect();
                         });
                     });
                     if (clients[id]["preview"]>value) clients[id]["preview"] = null;
@@ -98,14 +105,17 @@ module.exports = function (server) {
             }
         });
 
-        ws.on('close', function (code) {
+        // ws.on('close', function (code) {
+        ws.on('disconnect', function (reason) {
             console.log('Close WS connetion: ' + id + ", " + number);
             if (number==-1)
-                clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
+                // clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
+                clients[id]['directors'] = clients[id]['directors'].filter(item => item.id!=ws.id);
+                // console.log(clients[id]['directors']);
             else if (number>0) {
                 clients[id]['cameras'][number] = clients[id]['cameras'][number].filter(item => item.id!=ws.id);
                 // send message to directors
-                for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length && code!=4000; i++) {
+                for (let i=0; i<clients[id]['directors'].length && !clients[id]['cameras'][number].length && reason!="io server disconnect"; i++) { //code!=4000
                     send(clients[id]['directors'][i], {'disconnected':number});
                 }
             }
