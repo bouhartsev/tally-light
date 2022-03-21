@@ -8,15 +8,11 @@ block content
 
     div.cameras
 
-  footer.footer
-    .status
-      a(href="/") Tally Lights
-      | 
-    button#reset(type="reset") Not on air
-    .copyright
-      | © 
-      a(href="//bouhartsev.top/") Matvey Bouhartsev
-      | , 2021
+prepend footer
+  .status
+    a(href="/") Tally Lights
+    | 
+  button#reset(type="reset") Not on air
 
 prepend scripts
   script(src="/javascripts/director.js",defer)
