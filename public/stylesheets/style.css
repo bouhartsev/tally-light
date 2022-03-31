@@ -15,6 +15,7 @@ body {
   text-align: center;
   position: relative;
   margin: 0;
+  touch-action: manipulation;
 }
 
 main {
@@ -33,6 +34,7 @@ button {
   cursor: pointer;
   box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+  border-radius: 0;
 }
 
 .loading {
