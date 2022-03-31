@@ -34,7 +34,8 @@ button {
   cursor: pointer;
   box-sizing: border-box;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-border-radius: 0;
+  -webkit-appearance:none;
+  opacity: 1;
 }
 
 .loading {
