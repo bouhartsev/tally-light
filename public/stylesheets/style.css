@@ -29,6 +29,12 @@ a {
   margin: 10px;
 }
 
+#save {
+  display: block;
+  margin: 20px auto;
+  font-size: 1.5em;
+}
+
 button {
   cursor: pointer;
   box-sizing: border-box;
@@ -187,4 +193,57 @@ button {
 }
 .onair h2::after {
   content: "on air";
+}
+
+.cameras_crew {
+  border: 2px solid var(--color-fg);
+  border-radius: 15px;
+  padding: 10px;
+  overflow: hidden;
+  margin: auto;
+
+  min-width: 250px;
+  width: 50%;
+  max-width: 1000px;
+}
+
+.cameras_crew-links {
+  text-align: left;
+  list-style: none;
+  padding-left: 0;
+}
+
+/* @counter-style cameras-style {
+  system: extends decimal;
+  prefix: 'Camera ';
+  suffix: ' - ';
+}
+.cameras_crew-links {
+  text-align: left;
+  list-style: cameras-style;
+}
+.cameras_crew-links>* {
+  display: list-item;
+} */
+
+
+.clipboard {
+  margin: 0 5px 5px;
+  position: relative;
+  float: right;
+  background: transparent;
+}
+.clipboard::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: var(--color-bg);
+}
+.clipboard, .clipboard::after {
+  box-sizing: border-box;
+  border: 1px var(--color-fg) solid;
+  height: 25px;
+  width: 15px;
+  border-radius: 3px;
 }
