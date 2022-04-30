@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", function () {
     warning.innerText = "";
     switch (key) {
       case "title":
-        if (title_old != value) title, title_old, (project_name.value = value);
+        if (title_old != value) title, title_old, project_name.value = value;
         break;
       case "quantity":
         cams = parseInt(value);
@@ -90,5 +90,6 @@ document.addEventListener("DOMContentLoaded", function () {
         console.log(key, value);
         break;
     }
+    console.log(key, value);
   };
 });

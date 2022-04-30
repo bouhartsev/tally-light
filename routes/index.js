@@ -6,7 +6,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Tally Lights Online' });
 });
 router.get('/new', function(req, res, next) {
-  res.render('settings', { title: 'Settings Page' });
+  res.render('new', { title: 'Create new project' });
 });
 
 module.exports = router;

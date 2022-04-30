@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 
-// Change to nothing
+// Change to main ws
 router.get('/', function(req, res, next) {
   res.render('director', { title: 'Director Page' });
 });
