@@ -1,17 +1,16 @@
-form(action="", method="post", onsubmit="return false;")
-    label(for="title") Project title 
-        input.name_input(type="text",name="title",placeholder="e.g. project",required,autocomplete="false")
-    //- ,minlength="3",maxlength="18",pattern="[a-z0-9-]{3,18}",title="Only digits, lowercase letters and dashes"
-    p.name_result
-    label(for="nums") Cameras quantity
-        input.nums_input(type="number",name="nums",placeholder="e.g. 3",value="0",min="1",max="255",required)
-    button#save(type="submit") save
-    p.warning
+extends layout-ws
+
+block content
+  h1 Settings
+  main.loading
+    include settings-form
+    section.director
+        //- Кнопка начала/конца трансляции, ссылка на управление камерами
+    section.cameras_crew
+        button.clipboard(title="Copy to clipboard",aria-label="Copy to clipboard")
+        ol.cameras_crew-links
+            //- li Camera 1 - 
+            //-     a(href="https://example.com", target="_blank", rel="noopener noreferrer") test asdf;lkjasd;flkjasd;lfkj,mn,mn,mn,mn,mn,mn,mn asdasldklajsldkjalksjd sdflksjdflksjdflksdjf sdfsdlfkj asdlkjaslkdjalskdjlaksdjlaksdjlk asdlk jlaskdjlkasjdlkasjdlkajsdlkjasldkjalskjflkasjflaksjflkasjflkasjflkasjflkfjlfkjflkfjlkfjflk asflkjflkjflkfjlfkjlkjlkjlkjlkjlkjlkjlkjslkdjlaksjdlkasjdlkasjdlkasjdlkajsdlkajsdlkajslkdjaslkdjalskdjalksdjlakdjdlaksjdsdflkjsdfklsdjflksjdflksjdflkjsdflksjdlfkjsdkfjlskdjflksdjflksjdflksjdlfkjsdlkfjsdlkfjlsdkfjlsdkfjlskdfjlksdfj
+
 prepend scripts
     script(src="/javascripts/settings.js",defer)
-append head
-    script(async, defer, src="https://cdn.jsdelivr.net/npm/transliteration@2.1.8/dist/browser/bundle.umd.min.js")
-prepend footer
-  .status
-    a(href="/") Tally Lights
-    | 
