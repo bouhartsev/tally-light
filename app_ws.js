@@ -8,8 +8,7 @@ module.exports = function (server) {
   // const wss = new Server({ server });
   const wss = require("socket.io")(server);
 
-  var clients = {};
-  // current_proj
+  // var clients = {};
 
   function send(client, message) {
     if (typeof message == "string") message = { status: message };
@@ -32,19 +31,28 @@ module.exports = function (server) {
     let id = url_arr[0];
 
     console.log("New WS connection: " + id);
+    socket.on("disconnecting", (reason) => {
+      console.log("Close WS connetion: " + id + ", " + number);;
+    });
 
     // check id // TEMPORARY
-    if (!(id in clients))
-      clients[id] = {
-        settings: [],
-        directors: [],
-        cameras: {},
-        quantity: 0,
-        preview: null,
-        onair: null,
-      };
-
+    // if (!(id in clients))
+    //   current_proj = {
+    //     settings: [],
+    //     directors: [],
+    //     cameras: {},
+    //     quantity: 0,
+    //     preview: null,
+    //     onair: null,
+    //   };
     let number = -3; // -3 - not exists, -2 - settings, -1 - director, >0 - number of camera, 0 - reserved for camera used
+
+    current_proj = projects.get(id);
+    if (current_proj == null) {
+      ws.disconnect(true); // doesn't work
+      return;
+    }
+
     if (url_arr.length == 1 || url_arr[1] == "director") {
       number = -1;
     }
@@ -56,7 +64,7 @@ module.exports = function (server) {
     else if (url_arr.length > 1) {
       num = parseInt(url_arr[1]);
       if (Number.isInteger(num)) {
-        if (num > 0 && num <= clients[id]["quantity"]) {
+        if (num > 0 && num <= current_proj["quantity"]) {
           number = num;
         }
       }
@@ -64,38 +72,38 @@ module.exports = function (server) {
 
     // add settings
     if (number == -2) {
-      clients[id]["settings"].push(ws);
-      send(ws, { title: id, quantity: clients[id]["quantity"] });
+      current_proj["settings"].push(ws);
+      send(ws, { title: id, quantity: current_proj["quantity"] });
     }
     // add director
     else if (number == -1) {
-      clients[id]["directors"].push(ws);
+      current_proj["directors"].push(ws);
       send(ws, {
-        quantity: clients[id]["quantity"],
-        preview: clients[id]["preview"],
-        onair: clients[id]["onair"],
+        quantity: current_proj["quantity"],
+        preview: current_proj["preview"],
+        onair: current_proj["onair"],
       });
-      for (let key in clients[id]["cameras"]) {
-        if (clients[id]["cameras"][key].length) send(ws, { connected: key });
+      for (let key in current_proj["cameras"]) {
+        if (current_proj["cameras"][key].length) send(ws, { connected: key });
       }
     }
     // add camera
     else if (number > 0) {
-      if (!(number in clients[id]["cameras"])) {
-        clients[id]["cameras"][number] = [];
+      if (!(number in current_proj["cameras"])) {
+        current_proj["cameras"][number] = [];
       }
       // send message to directors
       for (
         let i = 0;
-        i < clients[id]["directors"].length &&
-        !clients[id]["cameras"][number].length;
+        i < current_proj["directors"].length &&
+        !current_proj["cameras"][number].length;
         i++
       ) {
-        send(clients[id]["directors"][i], { connected: number });
+        send(current_proj["directors"][i], { connected: number });
       }
-      clients[id]["cameras"][number].push(ws);
-      if (number == clients[id]["onair"]) send(ws, "onair");
-      if (number == clients[id]["preview"]) send(ws, "preview");
+      current_proj["cameras"][number].push(ws);
+      if (number == current_proj["onair"]) send(ws, "onair");
+      if (number == current_proj["preview"]) send(ws, "preview");
     } else {
       // send - ?
       // ws.close(4000, 'not exist');
@@ -106,8 +114,8 @@ module.exports = function (server) {
       console.log(`Message for "${id}" ` + message);
       message = JSON.parse(message);
 
-      for (let i = 0; i < clients[id]["directors"].length; i++) {
-        send(clients[id]["directors"][i], message);
+      for (let i = 0; i < current_proj["directors"].length; i++) {
+        send(current_proj["directors"][i], message);
       }
       // удалять камеры при изменении количества на сайте, удалять данные из preview и onair, отсоединять людей
       for (let key in message) {
@@ -119,95 +127,98 @@ module.exports = function (server) {
           if (projects.check(value)) send(ws, { wrong: "title" });
           else {
             try {
-              projects.create(value, clients[id]["quantity"]);
+              projects.create(value, current_proj["quantity"]);
             } catch (error) {
               send(ws, { wrong: "title" });
             }
             // послать всем камерам и страницам настроек информацию об изменении названия
-            for (let i = 0; i < clients[id]["settings"].length; i++) {
-              send(clients[id]["settings"][i], { change_title: value });
+            for (let i = 0; i < current_proj["settings"].length; i++) {
+              send(current_proj["settings"][i], { change_title: value });
             }
-            for (let camera_number in clients[id]["cameras"]) {
+            for (let i = 0; i < current_proj["directors"].length; i++) {
+              send(current_proj["directors"][i], { change_title: value });
+            }
+            for (let camera_number in current_proj["cameras"]) {
               for (
                 let i = 0;
-                i < clients[id]["cameras"][camera_number].length;
+                i < current_proj["cameras"][camera_number].length;
                 i++
               ) {
-                send(clients[id]["cameras"][camera_number][i], {
+                send(current_proj["cameras"][camera_number][i], {
                   change_title: value,
                 });
               }
             }
             // удалить данные текущего проекта
-            delete clients[id];
-            id = value;
-            clients[id] = projects.get(id);
+            projects.remove(id);
+            console.log("test action");
+            // id = value;
+            current_proj = projects.get(value);
           }
         } else if (key == "quantity") {
-            if (value < clients[id][key]) {
-              Object.keys(clients[id]["cameras"])
-                .filter((item) => item > value)
-                .forEach((cam_key) => {
-                  clients[id]["cameras"][cam_key].forEach((el) => {
-                    // el.close(4000, "not exist");
-                    el.disconnect();
-                  });
+          if (value < current_proj[key]) {
+            Object.keys(current_proj["cameras"])
+              .filter((item) => item > value)
+              .forEach((cam_key) => {
+                current_proj["cameras"][cam_key].forEach((el) => {
+                  // el.close(4000, "not exist");
+                  el.disconnect();
                 });
-              if (clients[id]["preview"] > value) clients[id]["preview"] = null;
-              if (clients[id]["onair"] > value) clients[id]["onair"] = null;
+              });
+            if (current_proj["preview"] > value) current_proj["preview"] = null;
+            if (current_proj["onair"] > value) current_proj["onair"] = null;
+          }
+          for (let i = 0; i < current_proj["settings"].length; i++) {
+            send(current_proj["settings"][i], { quantity: value });
+          }
+        } else {
+          if (value in current_proj["cameras"]) {
+            for (let i = 0; i < current_proj["cameras"][value].length; i++) {
+              send(current_proj["cameras"][value][i], key);
             }
-            for (let i = 0; i < clients[id]["settings"].length; i++) {
-              send(clients[id]["settings"][i], { quantity: value });
-            }
-          } else {
-            if (value in clients[id]["cameras"]) {
-              for (let i = 0; i < clients[id]["cameras"][value].length; i++) {
-                send(clients[id]["cameras"][value][i], key);
-              }
-            }
-            if (
-              ((key == "preview" && clients[id]["onair"] != clients[id][key]) ||
-                key == "onair") &&
-              clients[id][key] != null &&
-              clients[id][key] in clients[id]["cameras"]
+          }
+          if (
+            ((key == "preview" && current_proj["onair"] != current_proj[key]) ||
+              key == "onair") &&
+            current_proj[key] != null &&
+            current_proj[key] in current_proj["cameras"]
+          ) {
+            for (
+              let i = 0;
+              i < current_proj["cameras"][current_proj[key]].length;
+              i++
             ) {
-              for (
-                let i = 0;
-                i < clients[id]["cameras"][clients[id][key]].length;
-                i++
-              ) {
-                send(clients[id]["cameras"][clients[id][key]][i], "connected");
-              }
+              send(current_proj["cameras"][current_proj[key]][i], "connected");
             }
+          }
         }
 
-        clients[id][key] = value;
+        current_proj[key] = value;
       }
       // save to database
     });
 
     // ws.on('close', function (code) {
     ws.on("disconnect", function (reason) {
-      console.log("Close WS connetion: " + id + ", " + number);
       if (number == -1)
-        // clients[id]['directors'] = clients[id]['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
-        clients[id]["directors"] = clients[id]["directors"].filter(
+        // current_proj['directors'] = current_proj['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
+        current_proj["directors"] = current_proj["directors"].filter(
           (item) => item.id != ws.id
         );
       else if (number > 0) {
-        clients[id]["cameras"][number] = clients[id]["cameras"][number].filter(
-          (item) => item.id != ws.id
-        );
+        current_proj["cameras"][number] = current_proj["cameras"][
+          number
+        ].filter((item) => item.id != ws.id);
         // send message to directors
         for (
           let i = 0;
-          i < clients[id]["directors"].length &&
-          !clients[id]["cameras"][number].length &&
+          i < current_proj["directors"].length &&
+          !current_proj["cameras"][number].length &&
           reason != "io server disconnect";
           i++
         ) {
           //code!=4000
-          send(clients[id]["directors"][i], { disconnected: number });
+          send(current_proj["directors"][i], { disconnected: number });
         }
       }
     });

@@ -15,10 +15,9 @@ router.route("/new")
       // all checks and create
       projects.create(value, clients[id]["quantity"]);
       // return success
-      
+      // redirect to settings
     } catch (error) {
       // return error
-      // redirect to settings
     }
     console.log('testing');
   });

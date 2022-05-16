@@ -85,7 +85,7 @@ document.addEventListener("DOMContentLoaded", function () {
           cameras_crew_links.replaceChildren(...cams_list);
         }
 
-        cams_list_to_copy = cameras_crew_links.innerHTML; //.replace(/<\/?[a-zA-Z]+>/gi, "")
+        cams_list_to_copy = cameras_crew_links.innerText; //.replace(/<\/?[a-zA-Z]+>/gi, "")
         break;
       case "wrong":
         // отображать ошибки!!!!!!!!!!!!!!!
