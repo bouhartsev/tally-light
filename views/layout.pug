@@ -4,8 +4,8 @@ doctype html
 html(lang="en")
 	head
 		block head
-			if (title)
-				title= title
+			if (pageTitle)
+				title= pageTitle
 			else
 				title Tally Lights Online
 			link(rel='stylesheet' href='/stylesheets/style.css')
@@ -17,11 +17,11 @@ html(lang="en")
 	body
 		block content
 		footer.footer
+			if servName
+				.status
+					a(href="/") Tally Lights
+				| 
 			block footer
-				if servName
-					.status
-						a(href="/") Tally Lights
-						| 
 				.copyright
 					| © 
 					a(href="//bouhartsev.top/") Matvey Bouhartsev

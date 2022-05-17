@@ -1,22 +1,17 @@
 var express = require('express');
 var router = express.Router({mergeParams: true});
 
-var checkName = require('../controllers/nameController').checkName;
-router.use(checkName);
+var control = require('../controllers/urlController');
+router.use(control.name);
 
-// Change / to main ws
+// Change / to settings
 router.get(['/', '/director'], function(req, res, next) {
-  res.render('director', { title: 'Director Page' });
+  res.render('director', { pageTitle: 'Director Page' });
 });
 router.get('/settings', function(req, res, next) {
-  res.render('settings', { title: 'Settings Page' });
+  res.render('settings', { pageTitle: 'Settings Page' });
 });
-router.get('/:id', function(req, res, next) {
-  let id = req.params.id;
-  // >0, целое число
-  if (!isNaN(id)) res.render('camera', { title: 'Camera '+id, cam_id: id });
-  else next();
-});
+router.get('/:id', control.camera);
 
 
 module.exports = router;

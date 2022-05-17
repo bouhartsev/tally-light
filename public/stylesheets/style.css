@@ -43,20 +43,27 @@ button {
 
 .loading {
   cursor:wait;
-}
+/* }
 
-.loading .cameras {
-  height: 100px;
+.loading .cameras { */
+  min-height: 300px;
+  position: relative;
+  /* opacity: 0; */
 }
-
-.loading .cameras::after {
+/* .cameras */
+.loading::after, .loading::before {
   content: "";
   display: block;
 
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
   margin: auto;
-
+  z-index: 2;
+}
+.loading::before {
+  background: var(--color-bg);
+}
+.loading::after {
   width: 20px;
   height: 20px;
   /* box-sizing: border-box; */
@@ -195,7 +202,12 @@ button {
   content: "on air";
 }
 
+.error {
+  color: var(--color-orange);
+}
+
 .cameras_crew {
+  background: rgba(0, 0, 0, 0.3);
   border: 2px solid var(--color-fg);
   border-radius: 15px;
   padding: 10px;

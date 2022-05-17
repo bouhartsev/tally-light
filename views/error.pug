@@ -2,8 +2,6 @@ extends layout
 
 block content
   h1= message
-  h2= error.status
-  p This page doesn't exist!
+  h2= "Error " + error.status
   a(href="/") Go home
   p or check the URL
-  //- pre #{error.stack}

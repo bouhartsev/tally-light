@@ -8,11 +8,11 @@ block content
 
     div.cameras
 
+    - servName = true
+
 prepend footer
-  .status
-    a(href="/") Tally Lights
-    | 
-  button#reset(type="reset") Not on air
+  button#reset(type="reset") No camera
+  
 
 prepend scripts
   script(src="/javascripts/director.js",defer)

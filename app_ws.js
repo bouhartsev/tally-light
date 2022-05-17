@@ -1,4 +1,4 @@
-const projects = require("./models/project.js");
+const projects = require("./models/projects.js");
 
 module.exports = function (server) {
   const { v4 } = require("uuid");
@@ -32,7 +32,7 @@ module.exports = function (server) {
 
     console.log("New WS connection: " + id);
     socket.on("disconnecting", (reason) => {
-      console.log("Close WS connetion: " + id + ", " + number);;
+      console.log("Close WS connetion: " + id + ", " + number);
     });
 
     // check id // TEMPORARY
@@ -49,7 +49,7 @@ module.exports = function (server) {
 
     current_proj = projects.get(id);
     if (current_proj == null) {
-      ws.disconnect(true); // doesn't work
+      ws.disconnect(); // doesn't work
       return;
     }
 
@@ -107,7 +107,7 @@ module.exports = function (server) {
     } else {
       // send - ?
       // ws.close(4000, 'not exist');
-      socket.disconnect(true);
+      socket.disconnect();
     }
 
     ws.on("message", function (message) {
@@ -124,14 +124,10 @@ module.exports = function (server) {
         // Нужно ли проверять ключ и значение, а также на null - ?
 
         if (key == "title") {
-          if (projects.check(value)) send(ws, { wrong: "title" });
+          let res = projects.create(value, current_proj["quantity"]);
+          if (res != "Complete") send(ws, { wrong: res });
           else {
-            try {
-              projects.create(value, current_proj["quantity"]);
-            } catch (error) {
-              send(ws, { wrong: "title" });
-            }
-            // послать всем камерам и страницам настроек информацию об изменении названия
+            // послать всем участникам информацию об изменении названия
             for (let i = 0; i < current_proj["settings"].length; i++) {
               send(current_proj["settings"][i], { change_title: value });
             }
@@ -149,51 +145,56 @@ module.exports = function (server) {
                 });
               }
             }
-            // удалить данные текущего проекта
             projects.remove(id);
-            console.log("test action");
-            // id = value;
+            // id = value; // ????
             current_proj = projects.get(value);
           }
-        } else if (key == "quantity") {
-          if (value < current_proj[key]) {
-            Object.keys(current_proj["cameras"])
-              .filter((item) => item > value)
-              .forEach((cam_key) => {
-                current_proj["cameras"][cam_key].forEach((el) => {
-                  // el.close(4000, "not exist");
-                  el.disconnect();
-                });
-              });
-            if (current_proj["preview"] > value) current_proj["preview"] = null;
-            if (current_proj["onair"] > value) current_proj["onair"] = null;
-          }
-          for (let i = 0; i < current_proj["settings"].length; i++) {
-            send(current_proj["settings"][i], { quantity: value });
-          }
         } else {
-          if (value in current_proj["cameras"]) {
-            for (let i = 0; i < current_proj["cameras"][value].length; i++) {
-              send(current_proj["cameras"][value][i], key);
+          if (key == "quantity") {
+            if (value < current_proj[key]) {
+              Object.keys(current_proj["cameras"])
+                .filter((item) => item > value)
+                .forEach((cam_key) => {
+                  current_proj["cameras"][cam_key].forEach((el) => {
+                    // el.close(4000, "not exist");
+                    el.disconnect();
+                  });
+                });
+              if (current_proj["preview"] > value)
+                current_proj["preview"] = null;
+              if (current_proj["onair"] > value) current_proj["onair"] = null;
             }
-          }
-          if (
-            ((key == "preview" && current_proj["onair"] != current_proj[key]) ||
-              key == "onair") &&
-            current_proj[key] != null &&
-            current_proj[key] in current_proj["cameras"]
-          ) {
-            for (
-              let i = 0;
-              i < current_proj["cameras"][current_proj[key]].length;
-              i++
+            for (let i = 0; i < current_proj["settings"].length; i++) {
+              send(current_proj["settings"][i], { quantity: value });
+            }
+          } else {
+            if (value in current_proj["cameras"]) {
+              for (let i = 0; i < current_proj["cameras"][value].length; i++) {
+                send(current_proj["cameras"][value][i], key);
+              }
+            }
+            if (
+              ((key == "preview" &&
+                current_proj["onair"] != current_proj[key]) ||
+                key == "onair") &&
+              current_proj[key] != null &&
+              current_proj[key] in current_proj["cameras"]
             ) {
-              send(current_proj["cameras"][current_proj[key]][i], "connected");
+              for (
+                let i = 0;
+                i < current_proj["cameras"][current_proj[key]].length;
+                i++
+              ) {
+                send(
+                  current_proj["cameras"][current_proj[key]][i],
+                  "connected"
+                );
+              }
             }
           }
-        }
 
-        current_proj[key] = value;
+          current_proj[key] = value;
+        }
       }
       // save to database
     });
@@ -208,17 +209,19 @@ module.exports = function (server) {
       else if (number > 0) {
         current_proj["cameras"][number] = current_proj["cameras"][
           number
-        ].filter((item) => item.id != ws.id);
-        // send message to directors
-        for (
-          let i = 0;
-          i < current_proj["directors"].length &&
-          !current_proj["cameras"][number].length &&
-          reason != "io server disconnect";
-          i++
-        ) {
-          //code!=4000
-          send(current_proj["directors"][i], { disconnected: number });
+        ]?.filter((item) => item.id != ws.id);
+        if (!current_proj["cameras"][number]?.length) {
+          // send message to directors
+          for (
+            let i = 0;
+            i < current_proj["directors"].length &&
+            reason != "server namespace disconnect";
+            i++
+          ) {
+            //code!=4000
+            send(current_proj["directors"][i], { disconnected: number });
+          }
+          delete current_proj["cameras"][number];
         }
       }
     });

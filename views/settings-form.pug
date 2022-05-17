@@ -1,12 +1,12 @@
-form#settings_form(action="" method="post" onsubmit="return false;")
+form#settings_form(action="" method="post" onsubmit="return " + (setSubmit ? true : false) + ";")
     label(for="title") Project title 
-        input.name_input(type="text" name="title" placeholder="e.g. project",required,autocomplete="false")
+        input.name_input(type="text" name="title" placeholder="e.g. project" value=(data ? data.title : "") required autocomplete="false")
     //- ,minlength="3",maxlength="18",pattern="[a-z0-9-]{3,18}",title="Only digits, lowercase letters and dashes"
     p.name_result
     label(for="nums") Cameras quantity
-        input.nums_input(type="number" name="nums" placeholder="e.g. 3" value="0" min="1" max="255",required)
+        input.nums_input(type="number" name="quantity" placeholder="e.g. 3" value=(data ? data.quantity : 0) min="1" max="255" required)
+    p.error= wrong
     button#save(type="submit") save
-    p.warning
 
 - servName = true
 - reqTranslit = true
