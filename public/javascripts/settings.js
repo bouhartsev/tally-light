@@ -1,4 +1,26 @@
 document.addEventListener("DOMContentLoaded", function () {
+  const checkLnk = (u, s) => {
+    return (
+      u.lastIndexOf(s) == u.length - s.length ||
+      u.lastIndexOf(s) == u.length - s.length - 1
+    );
+  };
+  const getProjLink = () => {
+    proj_root_link = location.href;
+    if (checkLnk(proj_root_link, "/settings"))
+      proj_root_link = proj_root_link.slice(0, proj_root_link.length - 9);
+    if (!checkLnk(proj_root_link, "/")) proj_root_link += "/";
+    return proj_root_link;
+  };
+  const setDirLink = () => {
+    document.querySelector(".director-links").innerHTML =
+      "Director - " +
+      '<a href="' +
+      director_link +
+      '" target="_blank" rel="noopener noreferrer">' +
+      director_link +
+      "</a>";
+  };
 
   const project_name = document.querySelector(".name_input");
   const project_result = document.querySelector(".name_result");
@@ -6,19 +28,24 @@ document.addEventListener("DOMContentLoaded", function () {
   let title = "",
     cams = 0,
     title_old = "";
+  let proj_root_link = "",
+    director_link = "";
+
+  getProjLink();
+  director_link = proj_root_link + "director";
+  setDirLink();
 
   const inputHandler = function (e) {
     title = slugify(e.target.value);
     if (title != e.target.value)
-      project_result.innerText = "Actual title: " + title;
+      project_result.innerText = title; // "Actual title: " +
     else project_result.innerText = "";
   };
   project_name.addEventListener("input", inputHandler);
   project_name.addEventListener("propertychange", inputHandler);
 
   const settings_form = document.querySelector("#settings_form");
-  let cams_list = [],
-    cams_list_to_copy = "";
+  let cams_list = [];
   const saveSettings = function (e) {
     if (title != title_old) send("title", title);
 
@@ -29,12 +56,16 @@ document.addEventListener("DOMContentLoaded", function () {
   };
   settings_form.addEventListener("submit", saveSettings);
 
-  const button_copy = document.querySelector(".clipboard");
   const copyToClipboard = function (e) {
-    navigator.clipboard.writeText(cams_list_to_copy);
+    // add some notification !!!
+    navigator.clipboard.writeText(e.target.parentElement.innerText); //.replace(/<\/?[a-zA-Z]+>/gi, ""));
     console.log("Copied!");
   };
-  button_copy.addEventListener("click", copyToClipboard);
+  document
+    .querySelectorAll(".clipboard")
+    .forEach((button_copy) =>
+      button_copy.addEventListener("click", copyToClipboard)
+    );
 
   addition = document.querySelector(".status");
   const error = document.querySelector(".error");
@@ -57,9 +88,7 @@ document.addEventListener("DOMContentLoaded", function () {
             while (cams_list.length != value) {
               newCam = document.createElement("li");
               newCam.id = cams_list.length + 1;
-              temp_link = location.href;
-              if (checkStr(temp_link, "/settings")) temp_link = temp_link.slice(0, temp_link.length-9);
-              if (!checkStr(temp_link, "/")) temp_link += '/';
+              temp_link = proj_root_link;
               temp_link += newCam.id;
               newCam.innerHTML =
                 "Camera " +
@@ -75,8 +104,6 @@ document.addEventListener("DOMContentLoaded", function () {
           }
           cameras_crew_links.replaceChildren(...cams_list);
         }
-
-        cams_list_to_copy = cameras_crew_links.innerText; //.replace(/<\/?[a-zA-Z]+>/gi, "")
         break;
       case "wrong":
         error.innerText = value;
@@ -90,8 +117,4 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
     }
   };
-
-  const checkStr = (u, s) => {
-    return (u.lastIndexOf(s)==(u.length-s.length) || u.lastIndexOf(s)==(u.length-s.length-1));
-  }
 });

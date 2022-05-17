@@ -1,16 +1,24 @@
 extends layout-ws
 
 block content
-  h1 Settings
-  main.loading
-    include settings-form
-    section.director
-        //- Кнопка начала/конца трансляции, ссылка на управление камерами
-    section.cameras_crew
-        button.clipboard(title="Copy to clipboard",aria-label="Copy to clipboard")
-        ol.cameras_crew-links
-            //- li Camera 1 - 
-            //-     a(href="https://example.com", target="_blank", rel="noopener noreferrer") test asdf;lkjasd;flkjasd;lfkj,mn,mn,mn,mn,mn,mn,mn asdasldklajsldkjalksjd sdflksjdflksjdflksdjf sdfsdlfkj asdlkjaslkdjalskdjlaksdjlaksdjlk asdlk jlaskdjlkasjdlkasjdlkajsdlkjasldkjalskjflkasjflaksjflkasjflkasjflkasjflkfjlfkjflkfjlkfjflk asflkjflkjflkfjlfkjlkjlkjlkjlkjlkjlkjlkjslkdjlaksjdlkasjdlkasjdlkasjdlkajsdlkajsdlkajslkdjaslkdjalskdjalksdjlakdjdlaksjdsdflkjsdfklsdjflksjdflksjdflkjsdflksjdlfkjsdkfjlskdjflksdjflksjdflksjdlfkjsdlkfjsdlkfjlsdkfjlsdkfjlskdfjlksdfj
+	h1 Settings
+	main.loading
+		include settings-form
+		section.toCopy
+			//- ссылка на управление камерами
+			button.clipboard(title="Copy to clipboard",aria-label="Copy to clipboard")
+			div.director-links Director - 
+				a(href="https://example.com", target="_blank", rel="noopener noreferrer") https://example.com
+		section.toCopy
+			button.clipboard(title="Copy to clipboard",aria-label="Copy to clipboard")
+			ol.cameras_crew-links
+				//- li Camera 1 - 
+				//-     a(href="https://example.com", target="_blank", rel="noopener noreferrer") https://example.com
+
+//- prepend footer
+//- 	//- Кнопка начала/конца трансляции (on/off) - switch ???
+//- 	//- автоматический переход на режиссёрскую страницу
+//- 	button#air.bottom_action On air
 
 prepend scripts
-    script(src="/javascripts/settings.js",defer)
+	script(src="/javascripts/settings.js",defer)

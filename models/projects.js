@@ -16,7 +16,9 @@ module.exports = {
   create: function (title, quantity, sound = false) {
     let err = "";
     
-    if (/[^a-z0-9-]/.test(title)) err = "Wrong title. Check symbols."; // add checking for grammar
+    if (!title) err = "Wrong title.";
+    else if (/[^a-z0-9-]/.test(title)) err = "Wrong title. Check symbols."; // add checking for grammar
+    else if (title.length<3) err = "Wrong title. Must have 3 symbols or more.";
     else if (staticURLs.includes(title)) err = "Wrong title. URL is already exists.";
     else if (this.check(title)) err = "Project '" + title + "' already exists.";
     
