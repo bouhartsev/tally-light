@@ -1,20 +1,17 @@
 var express = require('express');
-var router = express.Router();
+var router = express.Router({mergeParams: true});
 
-// Change to nothing
-router.get('/', function(req, res, next) {
-  res.render('director', { title: 'Director Page' });
+var control = require('../controllers/urlController');
+router.use(control.name);
+
+// Change / to settings
+router.get(['/', '/director'], function(req, res, next) {
+  res.render('director', { pageTitle: 'Director Page' });
 });
 router.get('/settings', function(req, res, next) {
-  res.render('settings', { title: 'Settings Page' });
+  res.render('settings', { pageTitle: 'Settings Page' });
 });
-router.get('/director', function(req, res, next) {
-  res.render('director', { title: 'Director Page' });
-});
-router.all('/:id', function(req, res, next) {
-  let id = req.params.id;
-  res.render('camera', { title: 'Camera '+id, cam_id: id });
-});
+router.get('/:id', control.camera);
 
 
 module.exports = router;

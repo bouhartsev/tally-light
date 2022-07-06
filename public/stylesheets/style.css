@@ -30,6 +30,12 @@ a {
   margin: 10px;
 }
 
+#save {
+  display: block;
+  margin: 20px auto;
+  font-size: 1.5em;
+}
+
 button {
   cursor: pointer;
   box-sizing: border-box;
@@ -44,20 +50,27 @@ button {
 
 .loading {
   cursor:wait;
-}
+/* }
 
-.loading .cameras {
-  height: 100px;
+.loading .cameras { */
+  min-height: 300px;
+  position: relative;
+  /* opacity: 0; */
 }
-
-.loading .cameras::after {
+/* .cameras */
+.loading::after, .loading::before {
   content: "";
   display: block;
 
   position: absolute;
   top: 0; left: 0; bottom: 0; right: 0;
   margin: auto;
-
+  z-index: 2;
+}
+.loading::before {
+  background: var(--color-bg);
+}
+.loading::after {
   width: 20px;
   height: 20px;
   /* box-sizing: border-box; */
@@ -150,11 +163,11 @@ button {
 .name_input:invalid {
   border: red solid 3px;
 } */
-/* .name_result:not(:empty)::before {
+.name_result:not(:empty)::before {
   content: 'Actual title: ';
-} */
+}
 
-#reset {
+.bottom_action {
   margin: 10px 5px;
   height: 50px;
   padding: 0 20px;
@@ -194,4 +207,69 @@ button {
 }
 .onair h2::after {
   content: "on air";
+}
+
+.error {
+  color: var(--color-orange);
+}
+
+.toCopy {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--color-fg);
+  border-radius: 15px;
+  padding: 10px;
+  overflow: hidden;
+  margin: 1em auto;
+
+  position: relative;
+  text-align: left;
+
+  min-width: 250px;
+  width: 50%;
+  max-width: 1000px;
+}
+
+.toCopy>*:nth-child(2) {
+  margin: 0.5em auto;
+}
+
+.cameras_crew-links {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* @counter-style cameras-style {
+  system: extends decimal;
+  prefix: 'Camera ';
+  suffix: ' - ';
+}
+.cameras_crew-links {
+  text-align: left;
+  list-style: cameras-style;
+}
+.cameras_crew-links>* {
+  display: list-item;
+} */
+
+
+.clipboard {
+  margin: 0 5px 5px;
+  position: relative;
+  float: right;
+  background: transparent;
+}
+.clipboard::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: var(--color-bg);
+}
+.clipboard, .clipboard::after {
+  box-sizing: border-box;
+  border: 1px var(--color-fg) solid;
+  height: 25px;
+  width: 15px;
+  border-radius: 3px;
 }

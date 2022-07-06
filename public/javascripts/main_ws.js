@@ -3,18 +3,27 @@ let HOST = location.href.replace(/^http/, 'ws')
 let ws = io();
 
 let addition = null;
+let toSend = null;
+
+let redirect = function(title) {
+    location.pathname = location.pathname.replace(/^\/\w+/, '/'+title);
+}
 
 let setData = function(key, value) {return}
 
 let send = function(key, value) {
     // if (ws.bufferedAmount == 0) // нужно ли?
-    ws.emit("message",JSON.stringify({[key]: value}));
+    if (typeof key == "object") toSend = key;
+    else toSend = {[key]: value};
+    ws.emit("message",JSON.stringify(toSend));
 }
 
 ws.on('message', function(data) {
     let mes = JSON.parse(data);
     for (let key in mes) {
-        setData(key, mes[key]); // if key!='change_title'
+        if (key!='change_title')
+            setData(key, mes[key]);
+        else redirect(mes[key]);
     }
 }
 );

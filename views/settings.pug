@@ -1,17 +1,24 @@
 extends layout-ws
 
 block content
-  main
-    //- .loading
-    form(action="", method="post")
-        label(for="title") Project title 
-            input.name_input(type="text",name="title",placeholder="e.g. project",required,autocomplete="false")
-        //- ,minlength="3",maxlength="18",pattern="[a-z0-9-]{3,18}",title="Only digits, lowercase letters and dashes"
-        p.name_result
-        label(for="nums") Cameras quantity
-            input.nums_input(type="number",name="nums",placeholder="e.g. 3",value="0",min="1",max="255",required)
-        button#change(type="submit") change
+	h1 Settings
+	main.loading
+		include settings-form
+		section.toCopy
+			//- ссылка на управление камерами
+			button.clipboard(title="Copy to clipboard",aria-label="Copy to clipboard")
+			div.director-links Director - 
+				a(href="https://example.com", target="_blank", rel="noopener noreferrer") https://example.com
+		section.toCopy
+			button.clipboard(title="Copy to clipboard",aria-label="Copy to clipboard")
+			ol.cameras_crew-links
+				//- li Camera 1 - 
+				//-     a(href="https://example.com", target="_blank", rel="noopener noreferrer") https://example.com
+
+//- prepend footer
+//- 	//- Кнопка начала/конца трансляции (on/off) - switch ???
+//- 	//- автоматический переход на режиссёрскую страницу
+//- 	button#air.bottom_action On air
+
 prepend scripts
-    script(src="/javascripts/settings.js",defer)
-append head
-    script(async, defer, src="https://cdn.jsdelivr.net/npm/transliteration@2.1.8/dist/browser/bundle.umd.min.js")
+	script(src="/javascripts/settings.js",defer)
