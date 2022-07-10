@@ -14,7 +14,8 @@ body {
   color: var(--color-fg);
   text-align: center;
   position: relative;
-  margin: 0;
+  margin: 0 auto;
+  max-width: 1000px;
 }
 
 main {
@@ -103,6 +104,8 @@ button {
 
 .camera {
   display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   /* width: 200px;
   height: 200px; */
@@ -160,8 +163,11 @@ button {
   content: 'Actual title: ';
 }
 
-.bottom_action {
+.bottom_action, .bottom_air {
   margin: 10px 5px;
+}
+
+.bottom_action {
   height: 50px;
   padding: 0 20px;
   text-transform: uppercase;
@@ -265,4 +271,54 @@ button {
   height: 25px;
   width: 15px;
   border-radius: 3px;
+}
+.bottom_air {
+  height: fit-content;
+  padding-bottom: 1em;
+}
+#air {
+  --air-height: 40px;
+  display: block;
+  width: 7em;
+  height: var(--air-height);
+  background:gray;
+  z-index: 0;
+  margin: 5px auto;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition-duration: 300ms;
+  color: inherit
+}
+#air::before {
+  content: "off";
+  text-transform: uppercase;
+  height: 80%;
+  line-height: calc(0.8 * var(--air-height));
+  vertical-align: middle;
+  width: 40%;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  top: 10%;
+  left: 5%;
+  transition-duration: 300ms;
+  position: absolute;
+  z-index: 1;
+}
+#air[aria-checked="true"] {
+  background: var(--color-green);
+}
+#air[aria-checked="true"]::before {
+  content:"on";
+  left: 55%;
+}
+#air[aria-checked="true"]::after {
+  content:"autofinish at " attr(data-finish);
+  position: absolute;
+  left: 50%;
+  bottom: -1.5em;
+  transform: translateX(-50%);
+  width:fit-content;
+  white-space: nowrap;
 }

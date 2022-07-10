@@ -5,9 +5,7 @@ var control = require('../controllers/urlController');
 router.use(control.name);
 
 // Change / to settings
-router.get(['/', '/director'], function(req, res, next) {
-  res.render('director', { pageTitle: 'Director Page' });
-});
+router.get(['/', '/director'], control.director);
 router.get('/settings', function(req, res, next) {
   res.render('settings', { pageTitle: 'Settings Page' });
 });

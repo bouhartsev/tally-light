@@ -35,6 +35,15 @@ document.addEventListener("DOMContentLoaded", function () {
   director_link = proj_root_link + "director";
   setDirLink();
 
+  const air = document.querySelector("#air");
+  air.addEventListener("click", (e)=>{
+    // do you really want?
+
+    const live_checked = !(e.target.getAttribute('aria-checked') === 'true');
+    // send event
+    send("live", live_checked);
+  })
+
   const inputHandler = function (e) {
     title = slugify(e.target.value);
     if (title != e.target.value)
@@ -111,6 +120,16 @@ document.addEventListener("DOMContentLoaded", function () {
       case "offline":
         console.log("offline");
         error.innerText = "Saving error. You are offline!";
+        break;
+      case "live":
+        if (value) {
+          let temp_date = new Date();
+          let temp_minutes = parseInt(value/60);
+          temp_date.setUTCHours((parseInt(temp_minutes/60)+3)%24);
+          temp_date.setUTCMinutes(temp_minutes%60);
+          air.setAttribute('data-finish', temp_date.toLocaleTimeString().slice(0,-3));
+        }
+        air.setAttribute('aria-checked', String(!!value));
         break;
       default:
         console.log(key, value);

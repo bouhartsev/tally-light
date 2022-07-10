@@ -3,6 +3,8 @@
 let staticURLs = [];
 let projects = {
   test: {
+    live: null, // utc time (in seconds) of last action
+    live_timer: null, // timer instance
     settings: [],
     directors: [],
     cameras: {},
@@ -17,8 +19,9 @@ module.exports = {
     let err = "";
     
     if (!title) err = "Wrong title.";
-    else if (/[^a-z0-9-]/.test(title)) err = "Wrong title. Check symbols."; // add checking for grammar
     else if (title.length<3) err = "Wrong title. Must have 3 symbols or more.";
+    else if (/[^a-z0-9-]/.test(title)) err = "Wrong title. Check symbols.";
+    else if (title.indexOf('-')==0 || title.lastIndexOf('-')==(title.length-1) || title.indexOf("--")!=-1) err = "Wrong title. Check dashes.";
     else if (staticURLs.includes(title)) err = "Wrong title. URL is already exists.";
     else if (this.check(title)) err = "Project '" + title + "' already exists.";
     
@@ -38,6 +41,9 @@ module.exports = {
   check: function (title) {
     if (title in projects) return true;
     else return false;
+  },
+  checkLive: function(title) {
+    return !!projects[title]?.live;
   },
   get: function (title) {
     if (this.check(title)) return projects[title];

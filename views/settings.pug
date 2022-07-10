@@ -15,10 +15,11 @@ block content
 				//- li Camera 1 - 
 				//-     a(href="https://example.com", target="_blank", rel="noopener noreferrer") https://example.com
 
-//- prepend footer
-//- 	//- Кнопка начала/конца трансляции (on/off) - switch ???
-//- 	//- автоматический переход на режиссёрскую страницу
-//- 	button#air.bottom_action On air
+prepend footer
+	//- автоматический переход на режиссёрскую страницу - ?
+	div.bottom_air
+		| broadcast
+		button#air(aria-label="broadcast",role="switch",aria-checked="false",data-finish="00:00")
 
 prepend scripts
 	script(src="/javascripts/settings.js",defer)
