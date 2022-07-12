@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 
-    document.querySelector("#reset").addEventListener('click', function(event) {
+    document.querySelector("#reset_camera").addEventListener('click', function(event) {
         // check is any preview or onair !!
         send("preview", null);
         send("onair", null);

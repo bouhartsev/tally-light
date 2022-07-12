@@ -7,6 +7,8 @@ module.exports = async function (server) {
   const { v4 } = require("uuid");
   const uuid = v4;
 
+  await projects.checkLoading; // launch server only after DB connection
+
   // const { Server } = require('ws');
   // const wss = new Server({ server });
   const wss = require("socket.io")(server);
@@ -17,8 +19,6 @@ module.exports = async function (server) {
     if (typeof message == "string") message = { status: message };
     client.send(JSON.stringify(message));
   }
-
-  await projects.checkLoading; // launch server only after DB connection
 
   // wss.on('connection', function (ws, req) {
   wss.on("connection", function (socket) {

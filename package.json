@@ -11,6 +11,7 @@
     "dotenv": "^16.0.1",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "jstransformer-markdown-it": "^2.1.0",
     "morgan": "~1.9.1",
     "pg": "^8.7.3",
     "pug": "^3.0.2",
