@@ -5,6 +5,8 @@ form#settings_form(action="" method="post" onsubmit="return " + (setSubmit ? tru
     p.name_result
     label(for="nums") Cameras quantity
         input.nums_input(type="number" name="quantity" placeholder="e.g. 3" value=(data ? data.quantity : 0) min="1" max="255" required)
+    //- label(for="sound") Sound by default
+    //-     input.sound_input(type="checkbox" name="sound" value=(data ? data.sound : false))
     p.error= wrong
     button#save(type="submit") save
 

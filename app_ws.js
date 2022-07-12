@@ -1,4 +1,5 @@
 const projects = require("./models/projects.js");
+const autofinish_hours = process.env.AUTOFINISH ? patseFloat(process.env.AUTOFINISH) : 3;
 
 module.exports = function (server) {
   const { v4 } = require("uuid");
@@ -49,7 +50,7 @@ module.exports = function (server) {
 
     current_proj = projects.get(id);
     if (current_proj == null) {
-      ws.disconnect(); // doesn't work
+      ws.disconnect();
       return;
     }
 
@@ -73,7 +74,11 @@ module.exports = function (server) {
     // add settings
     if (number == -2) {
       current_proj["settings"].push(ws);
-      send(ws, { title: id, quantity: current_proj["quantity"], live: current_proj["live"] });
+      send(ws, {
+        title: id,
+        quantity: current_proj["quantity"],
+        live: current_proj["live"],
+      });
     }
     // add director
     else if (number == -1) {
@@ -108,6 +113,12 @@ module.exports = function (server) {
       // send - ?
       // ws.close(4000, 'not exist');
       socket.disconnect();
+      return;
+    }
+
+	// if not live
+    if (number != -2 && !projects.checkLive(id)) {
+      socket.disconnect();
     }
 
     function broadcastSend() {
@@ -116,16 +127,12 @@ module.exports = function (server) {
       }
     }
     function broadcastOn() {
-      current_proj["live"] = parseInt((Date.now() / 1000) % (60 * 60 * 24));
+      current_proj["live"] = parseInt(((Date.now()+autofinish_hours*3600000) / 1000) % (60 * 60 * 24));
       if (current_proj["live_timer"]) clearTimeout(current_proj["live_timer"]);
-      current_proj["live_timer"] = setTimeout(
-        broadcastOff,
-        1000 * 3 * 10 // * 60 * 60
-      );
+      current_proj["live_timer"] = setTimeout(broadcastOff, 1000 * 3 * 60 * 60);
       broadcastSend();
     }
     function broadcastOff() {
-      console.log(`Broadcast for "${id}" off`);
       Object.keys(current_proj["cameras"]).forEach((cam_key) => {
         current_proj["cameras"][cam_key].forEach((el) => {
           el.disconnect();
@@ -163,80 +170,94 @@ module.exports = function (server) {
 
         // Нужно ли проверять ключ и значение, а также на null - ?
 
-        if (key == "title") {
-          let res = projects.create(value, current_proj["quantity"]);
-          if (res != "Complete") send(ws, { wrong: res });
-          else {
-            // послать всем участникам информацию об изменении названия
-            for (let i = 0; i < current_proj["settings"].length; i++) {
-              send(current_proj["settings"][i], { change_title: value });
-            }
-            for (let i = 0; i < current_proj["directors"].length; i++) {
-              send(current_proj["directors"][i], { change_title: value });
-            }
-            for (let camera_number in current_proj["cameras"]) {
-              for (
-                let i = 0;
-                i < current_proj["cameras"][camera_number].length;
-                i++
-              ) {
-                send(current_proj["cameras"][camera_number][i], {
-                  change_title: value,
-                });
-              }
-            }
-            projects.remove(id);
-            // id = value; // ????
-            current_proj = projects.get(value);
-          }
-        } else {
-          if (key == "quantity") {
-            if (value < current_proj[key]) {
-              Object.keys(current_proj["cameras"])
-                .filter((item) => item > value)
-                .forEach((cam_key) => {
-                  current_proj["cameras"][cam_key].forEach((el) => {
-                    // el.close(4000, "not exist");
-                    el.disconnect();
+        if (key != "title") {
+          if (!("title" in message)) {
+            // add sound
+            if (key == "quantity") {
+              if (value < current_proj[key]) {
+                Object.keys(current_proj["cameras"])
+                  .filter((item) => item > value)
+                  .forEach((cam_key) => {
+                    current_proj["cameras"][cam_key].forEach((el) => {
+                      // el.close(4000, "not exist");
+                      el.disconnect();
+                    });
                   });
-                });
-              if (current_proj["preview"] > value)
-                current_proj["preview"] = null;
-              if (current_proj["onair"] > value) current_proj["onair"] = null;
-            }
-            for (let i = 0; i < current_proj["settings"].length; i++) {
-              send(current_proj["settings"][i], { quantity: value });
-            }
-          } else {
-            if (value in current_proj["cameras"]) {
-              for (let i = 0; i < current_proj["cameras"][value].length; i++) {
-                send(current_proj["cameras"][value][i], key);
+                if (current_proj["preview"] > value)
+                  current_proj["preview"] = null;
+                if (current_proj["onair"] > value) current_proj["onair"] = null;
               }
-            }
-            if (
-              ((key == "preview" &&
-                current_proj["onair"] != current_proj[key]) ||
-                key == "onair") &&
-              current_proj[key] != null &&
-              current_proj[key] in current_proj["cameras"]
-            ) {
-              for (
-                let i = 0;
-                i < current_proj["cameras"][current_proj[key]].length;
-                i++
+              for (let i = 0; i < current_proj["settings"].length; i++) {
+                send(current_proj["settings"][i], { quantity: value });
+              }
+            } else {
+              if (value in current_proj["cameras"]) {
+                for (
+                  let i = 0;
+                  i < current_proj["cameras"][value].length;
+                  i++
+                ) {
+                  send(current_proj["cameras"][value][i], key);
+                }
+              }
+              if (
+                ((key == "preview" &&
+                  current_proj["onair"] != current_proj[key]) ||
+                  key == "onair") &&
+                current_proj[key] != null &&
+                current_proj[key] in current_proj["cameras"]
               ) {
-                send(
-                  current_proj["cameras"][current_proj[key]][i],
-                  "connected"
-                );
+                for (
+                  let i = 0;
+                  i < current_proj["cameras"][current_proj[key]].length;
+                  i++
+                ) {
+                  send(
+                    current_proj["cameras"][current_proj[key]][i],
+                    "connected"
+                  );
+                }
               }
             }
           }
-
-          current_proj[key] = value;
+          if (key != "title") current_proj[key] = value;
         }
       }
+
       // save to database
+
+      if ("title" in message) {
+        let value = message["title"];
+        let res = projects.create(
+          value,
+          current_proj["quantity"],
+          current_proj
+        );
+        if (res != "Complete") send(ws, { wrong: res });
+        else {
+          // послать всем участникам информацию об изменении названия
+          for (let i = 0; i < current_proj["settings"].length; i++) {
+            send(current_proj["settings"][i], { change_title: value });
+          }
+          for (let i = 0; i < current_proj["directors"].length; i++) {
+            send(current_proj["directors"][i], { change_title: value });
+          }
+          for (let camera_number in current_proj["cameras"]) {
+            for (
+              let i = 0;
+              i < current_proj["cameras"][camera_number].length;
+              i++
+            ) {
+              send(current_proj["cameras"][camera_number][i], {
+                change_title: value,
+              });
+            }
+          }
+          projects.remove(id);
+          // id = value; // ????
+          current_proj = projects.get(value);
+        }
+      }
     });
 
     // ws.on('close', function (code) {

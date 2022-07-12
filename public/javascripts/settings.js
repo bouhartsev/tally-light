@@ -40,7 +40,6 @@ document.addEventListener("DOMContentLoaded", function () {
     // do you really want?
 
     const live_checked = !(e.target.getAttribute('aria-checked') === 'true');
-    // send event
     send("live", live_checked);
   })
 
@@ -56,12 +55,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const settings_form = document.querySelector("#settings_form");
   let cams_list = [];
   const saveSettings = function (e) {
-    if (title != title_old) send("title", title);
+    let toSend = {};
+    if (title != title_old) toSend["title"] = title;
 
     let cams_temp = parseInt(cameras.value);
     if ((cams_temp || cams_temp === 0) && cams_temp != cams) {
-      if (cams_temp >= 0 && cams_temp <= 255) send("quantity", cams_temp);
+      if (cams_temp >= 0 && cams_temp <= 255) toSend["quantity"] = cams_temp;
     }
+
+    if (Object.keys(toSend).length) send(toSend);
   };
   settings_form.addEventListener("submit", saveSettings);
 
@@ -125,7 +127,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (value) {
           let temp_date = new Date();
           let temp_minutes = parseInt(value/60);
-          temp_date.setUTCHours((parseInt(temp_minutes/60)+3)%24);
+          temp_date.setUTCHours(parseInt(temp_minutes/60)%24);
           temp_date.setUTCMinutes(temp_minutes%60);
           air.setAttribute('data-finish', temp_date.toLocaleTimeString().slice(0,-3));
         }

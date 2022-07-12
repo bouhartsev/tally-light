@@ -1,40 +1,67 @@
+require("dotenv").config();
 
+const { Pool } = require("pg");
+const db_conf = process.env.DATABASE_URL
+  ? { connectionString: process.env.DATABASE_URL }
+  : {
+      ssl: {
+        rejectUnauthorized: false,
+      },
+    };
+const db = new Pool(db_conf);
 
 let staticURLs = [];
-let projects = {
-  test: {
-    live: null, // utc time (in seconds) of last action
-    live_timer: null, // timer instance
+let projects = {};
+
+function addProj(title, props) {
+  projects[title] = {
+    quantity: props.quantity ? props.quantity : 0, // cameras quantity, must be >0
+    sound: props.sound ? true : false, // enable sound by default
+    live: props.live ? props.live : null, // utc time (in seconds) of last action plus delay ("autofinish at")
+    live_timer: props.live_timer ? props.live_timer : null, // timer instance
+    preview: props.preview ? props.preview : null,
+    onair: props.onair ? props.onair : null,
     settings: [],
     directors: [],
     cameras: {},
-    quantity: 0,
-    preview: null,
-    onair: null,
-  },
-};
+  };
+}
+
+let allFromDB = db.query("SELECT * FROM projects", []);
+allFromDB
+  .then((res) => {
+    res.rows.forEach((el) => addProj(el["title"], el));
+    console.log("DB connected");
+  })
+  .catch((err) => {
+    // throw err;
+    console.error(err);
+  });
 
 module.exports = {
-  create: function (title, quantity, sound = false) {
+  create: function (title, quantity, otherProps = {}) {
     let err = "";
-    
+
     if (!title) err = "Wrong title.";
-    else if (title.length<3) err = "Wrong title. Must have 3 symbols or more.";
+    else if (title.length < 3)
+      err = "Wrong title. Must have 3 symbols or more.";
     else if (/[^a-z0-9-]/.test(title)) err = "Wrong title. Check symbols.";
-    else if (title.indexOf('-')==0 || title.lastIndexOf('-')==(title.length-1) || title.indexOf("--")!=-1) err = "Wrong title. Check dashes.";
-    else if (staticURLs.includes(title)) err = "Wrong title. URL is already exists.";
+    else if (
+      title.indexOf("-") == 0 ||
+      title.lastIndexOf("-") == title.length - 1 ||
+      title.indexOf("--") != -1
+    )
+      err = "Wrong title. Check dashes.";
+    else if (staticURLs.includes(title))
+      err = "Wrong title. URL is already exists.";
     else if (this.check(title)) err = "Project '" + title + "' already exists.";
-    
+
+    quantity = parseInt(quantity);
+    if (!quantity || quantity < 0) err += " Wrong quantity.";
+
     if (err) return err;
     else {
-      projects[title] = {
-        settings: [],
-        directors: [],
-        cameras: {},
-        quantity: quantity,
-        preview: null,
-        onair: null,
-      };
+      addProj(title, { quantity: quantity, ...otherProps });
       return "Complete";
     }
   },
@@ -42,7 +69,7 @@ module.exports = {
     if (title in projects) return true;
     else return false;
   },
-  checkLive: function(title) {
+  checkLive: function (title) {
     return !!projects[title]?.live;
   },
   get: function (title) {
@@ -55,6 +82,10 @@ module.exports = {
       if (!this.check(title)) return true;
     }
     return false;
+  },
+  checkLoading: allFromDB,
+  save: function (title) {
+    // save to db
   },
   setStatic: function (url_arr) {
     if (staticURLs.length != 0) return false;
