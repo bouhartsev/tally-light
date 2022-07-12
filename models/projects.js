@@ -9,6 +9,7 @@ const db_conf = process.env.DATABASE_URL
       },
     };
 const db = new Pool(db_conf);
+let arr_fields = ["title", "quantity", "sound"];
 
 let staticURLs = [];
 let projects = {};
@@ -30,6 +31,7 @@ function addProj(title, props) {
 let allFromDB = db.query("SELECT * FROM projects", []);
 allFromDB
   .then((res) => {
+    if (res.rows.length) arr_fields = Object.keys(res.rows[0]);
     res.rows.forEach((el) => addProj(el["title"], el));
     console.log("DB connected");
   })
@@ -62,6 +64,7 @@ module.exports = {
     if (err) return err;
     else {
       addProj(title, { quantity: quantity, ...otherProps });
+      this.save(title);
       return "Complete";
     }
   },
@@ -79,13 +82,41 @@ module.exports = {
   remove: function (title) {
     if (this.check(title)) {
       delete projects[title];
+      db.query("DELETE FROM projects WHERE title = $1;", [title]).catch((err) => {
+        console.error(err);
+      });
       if (!this.check(title)) return true;
     }
     return false;
   },
   checkLoading: allFromDB,
-  save: function (title) {
-    // save to db
+  save: function (title, fields = arr_fields) {
+    console.log("save");
+    fields = fields.filter(
+      (x) => arr_fields.includes(x) && (x in projects[title])
+    );
+    if (!fields.length) {
+      console.log("Nothing to save!");
+      return false;
+    }
+    let vals = fields.map((k) => projects[title][k]);
+
+    let q_string = "";
+    fields.forEach((k, i) => (q_string += k + " = EXCLUDED." + k + ", "));
+    q_string =
+      "INSERT INTO projects (title, " +
+      fields.join(", ") +
+      ") VALUES ('" +
+      title +
+      "', '" +
+      vals.join("', '") +
+      "') ON CONFLICT (title) DO UPDATE SET " +
+      q_string.slice(0, -2) +
+      ";";
+    db.query(q_string, []).catch((err) => {
+      console.error(err);
+    });
+    return true;
   },
   setStatic: function (url_arr) {
     if (staticURLs.length != 0) return false;

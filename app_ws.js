@@ -1,7 +1,9 @@
 const projects = require("./models/projects.js");
-const autofinish_hours = process.env.AUTOFINISH ? patseFloat(process.env.AUTOFINISH) : 3;
+const autofinish_hours = process.env.AUTOFINISH
+  ? patseFloat(process.env.AUTOFINISH)
+  : 3;
 
-module.exports = function (server) {
+module.exports = async function (server) {
   const { v4 } = require("uuid");
   const uuid = v4;
 
@@ -15,6 +17,8 @@ module.exports = function (server) {
     if (typeof message == "string") message = { status: message };
     client.send(JSON.stringify(message));
   }
+
+  await projects.checkLoading; // launch server only after DB connection
 
   // wss.on('connection', function (ws, req) {
   wss.on("connection", function (socket) {
@@ -116,7 +120,7 @@ module.exports = function (server) {
       return;
     }
 
-	// if not live
+    // if not live
     if (number != -2 && !projects.checkLive(id)) {
       socket.disconnect();
     }
@@ -127,7 +131,9 @@ module.exports = function (server) {
       }
     }
     function broadcastOn() {
-      current_proj["live"] = parseInt(((Date.now()+autofinish_hours*3600000) / 1000) % (60 * 60 * 24));
+      current_proj["live"] = parseInt(
+        ((Date.now() + autofinish_hours * 3600000) / 1000) % (60 * 60 * 24)
+      );
       if (current_proj["live_timer"]) clearTimeout(current_proj["live_timer"]);
       current_proj["live_timer"] = setTimeout(broadcastOff, 1000 * 3 * 60 * 60);
       broadcastSend();
@@ -157,13 +163,8 @@ module.exports = function (server) {
         delete message["live"];
       } else if (current_proj["live"]) broadcastOn();
 
-      for (
-        let i = 0;
-        i < current_proj["directors"].length && Object.keys(message).length;
-        i++
-      ) {
-        send(current_proj["directors"][i], message);
-      }
+      let has_title = "title" in message;
+
       // удалять камеры при изменении количества на сайте, удалять данные из preview и onair, отсоединять людей
       for (let key in message) {
         let value = message[key];
@@ -171,7 +172,7 @@ module.exports = function (server) {
         // Нужно ли проверять ключ и значение, а также на null - ?
 
         if (key != "title") {
-          if (!("title" in message)) {
+          if (!has_title) {
             // add sound
             if (key == "quantity") {
               if (value < current_proj[key]) {
@@ -220,11 +221,15 @@ module.exports = function (server) {
               }
             }
           }
-          if (key != "title") current_proj[key] = value;
+          current_proj[key] = value;
         }
       }
 
-      // save to database
+      if (Object.keys(message).length) {
+        for (let i = 0; i < current_proj["directors"].length; i++)
+          send(current_proj["directors"][i], message);
+        if (!has_title) projects.save(id, Object.keys(message));
+      }
 
       if ("title" in message) {
         let value = message["title"];
