@@ -22,11 +22,8 @@ document.addEventListener("DOMContentLoaded", function () {
       "</a>";
   };
 
-  const project_name = document.querySelector(".name_input");
-  const project_result = document.querySelector(".name_result");
   const cameras = document.querySelector(".nums_input");
-  let title = "",
-    cams = 0,
+  let cams = 0,
     title_old = "";
   let proj_root_link = "",
     director_link = "";
@@ -42,15 +39,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const live_checked = !(e.target.getAttribute('aria-checked') === 'true');
     send("live", live_checked);
   })
-
-  const inputHandler = function (e) {
-    title = slugify(e.target.value);
-    if (title != e.target.value)
-      project_result.innerText = title; // "Actual title: " +
-    else project_result.innerText = "";
-  };
-  project_name.addEventListener("input", inputHandler);
-  project_name.addEventListener("propertychange", inputHandler);
 
   const settings_form = document.querySelector("#settings_form");
   let cams_list = [];

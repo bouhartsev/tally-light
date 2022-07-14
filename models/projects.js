@@ -91,12 +91,11 @@ module.exports = {
   },
   checkLoading: allFromDB,
   save: function (title, fields = arr_fields) {
-    console.log("save");
     fields = fields.filter(
       (x) => arr_fields.includes(x) && (x in projects[title])
     );
     if (!fields.length) {
-      console.log("Nothing to save!");
+      console.log("DB: Nothing to save!");
       return false;
     }
     let vals = fields.map((k) => projects[title][k]);
@@ -113,9 +112,7 @@ module.exports = {
       "') ON CONFLICT (title) DO UPDATE SET " +
       q_string.slice(0, -2) +
       ";";
-    db.query(q_string, []).catch((err) => {
-      console.error(err);
-    });
+    db.query(q_string, []).then(res=>console.log("DB: saved")).catch((err) => console.error(err));
     return true;
   },
   setStatic: function (url_arr) {

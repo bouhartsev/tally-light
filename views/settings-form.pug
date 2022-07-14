@@ -1,4 +1,4 @@
-form#settings_form(action="" method="post" onsubmit="return " + (setSubmit ? true : false) + ";")
+form#settings_form(action="" method="post" onsubmit=`replaceTitle(); return ` + (setSubmit ? true : false) + `;`)
     label(for="title") Project title 
         input.name_input(type="text" name="title" placeholder="e.g. project" value=(data ? data.title : "") required autocomplete="false")
     //- ,minlength="3",maxlength="18",pattern="[a-z0-9-]{3,18}",title="Only digits, lowercase letters and dashes"
