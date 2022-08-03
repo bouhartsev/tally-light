@@ -1,19 +1,12 @@
 const projects = require("./models/projects.js");
 const autofinish_hours = process.env.AUTOFINISH
-  ? patseFloat(process.env.AUTOFINISH)
+  ? parseFloat(process.env.AUTOFINISH)
   : 3;
 
 module.exports = async function (server) {
-  const { v4 } = require("uuid");
-  const uuid = v4;
-
   await projects.checkLoading; // launch server only after DB connection
 
-  // const { Server } = require('ws');
-  // const wss = new Server({ server });
   const wss = require("socket.io")(server);
-
-  // var clients = {};
 
   function send(client, message) {
     if (typeof message == "string") message = { status: message };
@@ -40,16 +33,6 @@ module.exports = async function (server) {
       console.log("Close WS connetion: " + id + ", " + number);
     });
 
-    // check id // TEMPORARY
-    // if (!(id in clients))
-    //   current_proj = {
-    //     settings: [],
-    //     directors: [],
-    //     cameras: {},
-    //     quantity: 0,
-    //     preview: null,
-    //     onair: null,
-    //   };
     let number = -3; // -3 - not exists, -2 - settings, -1 - director, >0 - number of camera, 0 - reserved for camera used
 
     current_proj = projects.get(id);
@@ -58,16 +41,15 @@ module.exports = async function (server) {
       return;
     }
 
-    if (url_arr.length == 1 || url_arr[1] == "director") {
-      number = -1;
-    }
-    // or empty in future
-    else if (url_arr[1] == "settings") {
+    if (url_arr.length == 1 || url_arr[1] == "settings") {
       number = -2;
     }
+    else if (url_arr[1] == "director") {
+      number = -1;
+    }
     // cameras
-    else if (url_arr.length > 1) {
-      num = parseInt(url_arr[1]);
+    else if (url_arr.length > 2) {
+      num = parseInt(url_arr[2]);
       if (Number.isInteger(num)) {
         if (num > 0 && num <= current_proj["quantity"]) {
           number = num;
@@ -114,8 +96,6 @@ module.exports = async function (server) {
       if (number == current_proj["onair"]) send(ws, "onair");
       if (number == current_proj["preview"]) send(ws, "preview");
     } else {
-      // send - ?
-      // ws.close(4000, 'not exist');
       socket.disconnect();
       return;
     }
@@ -157,73 +137,70 @@ module.exports = async function (server) {
       console.log(`Message for "${id}" ` + message);
       message = JSON.parse(message);
 
+      // check and update broadcast
       if (message.hasOwnProperty("live")) {
         if (message["live"] === true) broadcastOn();
         else broadcastOff();
         delete message["live"];
       } else if (current_proj["live"]) broadcastOn();
 
-      let has_title = "title" in message;
+      let has_title = Boolean("title" in message);
 
-      // удалять камеры при изменении количества на сайте, удалять данные из preview и onair, отсоединять людей
+      // send data and change "projects"
       for (let key in message) {
         let value = message[key];
 
-        // Нужно ли проверять ключ и значение, а также на null - ?
+        // Нужно ли проверять ключ и значение, а также на null - ?????
 
-        if (key != "title") {
-          if (!has_title) {
-            // add sound
-            if (key == "quantity") {
-              if (value < current_proj[key]) {
-                Object.keys(current_proj["cameras"])
-                  .filter((item) => item > value)
-                  .forEach((cam_key) => {
-                    current_proj["cameras"][cam_key].forEach((el) => {
-                      // el.close(4000, "not exist");
-                      el.disconnect();
-                    });
+        if (key == "title") continue;
+        if (!has_title) {
+          // add sound
+          if (key == "quantity") {
+            if (value < current_proj[key]) {
+              Object.keys(current_proj["cameras"])
+                .filter((item) => item > value)
+                .forEach((cam_key) => {
+                  current_proj["cameras"][cam_key].forEach((el) => {
+                    el.disconnect();
                   });
-                if (current_proj["preview"] > value)
-                  current_proj["preview"] = null;
-                if (current_proj["onair"] > value) current_proj["onair"] = null;
+                });
+              if (current_proj["preview"] > value)
+                current_proj["preview"] = null;
+              if (current_proj["onair"] > value) current_proj["onair"] = null;
+            }
+            for (let i = 0; i < current_proj["settings"].length; i++) {
+              send(current_proj["settings"][i], { quantity: value });
+            }
+          } else {
+            if (value in current_proj["cameras"]) {
+              for (let i = 0; i < current_proj["cameras"][value].length; i++) {
+                send(current_proj["cameras"][value][i], key);
               }
-              for (let i = 0; i < current_proj["settings"].length; i++) {
-                send(current_proj["settings"][i], { quantity: value });
-              }
-            } else {
-              if (value in current_proj["cameras"]) {
-                for (
-                  let i = 0;
-                  i < current_proj["cameras"][value].length;
-                  i++
-                ) {
-                  send(current_proj["cameras"][value][i], key);
-                }
-              }
-              if (
-                ((key == "preview" &&
-                  current_proj["onair"] != current_proj[key]) ||
-                  key == "onair") &&
-                current_proj[key] != null &&
-                current_proj[key] in current_proj["cameras"]
+            }
+            if (
+              ((key == "preview" &&
+                current_proj["onair"] != current_proj[key]) ||
+                key == "onair") &&
+              current_proj[key] != null &&
+              current_proj[key] in current_proj["cameras"]
+            ) {
+              for (
+                let i = 0;
+                i < current_proj["cameras"][current_proj[key]].length;
+                i++
               ) {
-                for (
-                  let i = 0;
-                  i < current_proj["cameras"][current_proj[key]].length;
-                  i++
-                ) {
-                  send(
-                    current_proj["cameras"][current_proj[key]][i],
-                    "connected"
-                  );
-                }
+                send(
+                  current_proj["cameras"][current_proj[key]][i],
+                  "connected"
+                );
               }
             }
           }
-          current_proj[key] = value;
         }
+        current_proj[key] = value;
       }
+
+      // send data to directors and save project to database
 
       if (Object.keys(message).length) {
         for (let i = 0; i < current_proj["directors"].length; i++)
@@ -240,7 +217,7 @@ module.exports = async function (server) {
         );
         if (res != "Complete") send(ws, { wrong: res });
         else {
-          // послать всем участникам информацию об изменении названия
+          // send title changing event
           for (let i = 0; i < current_proj["settings"].length; i++) {
             send(current_proj["settings"][i], { change_title: value });
           }
@@ -265,10 +242,8 @@ module.exports = async function (server) {
       }
     });
 
-    // ws.on('close', function (code) {
     ws.on("disconnect", function (reason) {
       if (number == -1)
-        // current_proj['directors'] = current_proj['directors'].filter(item => JSON.stringify(item)!=JSON.stringify(ws));
         current_proj["directors"] = current_proj["directors"].filter(
           (item) => item.id != ws.id
         );
@@ -284,7 +259,6 @@ module.exports = async function (server) {
             reason != "server namespace disconnect";
             i++
           ) {
-            //code!=4000
             send(current_proj["directors"][i], { disconnected: number });
           }
           delete current_proj["cameras"][number];

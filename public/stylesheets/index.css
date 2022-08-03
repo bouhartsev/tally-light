@@ -59,6 +59,41 @@ h1 + p {
     visibility: hidden;
 }
 
-/* Style for create button */
+a[href$="/new"] {
+    display: block;
+    color: var(--color-bg);
+    background: var(--color-fg);
+    padding: 5px;
+    text-decoration: none;
+    margin: auto;
+    width: fit-content;
+}
 
-/* Styles for summary */
+summary {
+    color: transparent;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+summary::before {
+    content: "\25BC  read more \25BC";
+
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: var(--color-fg);
+}
+
+details[open] summary::before {
+    content: "\25B2  read less \25B2" ;
+}
+
+em {
+    font-style: inherit;
+    color: var(--color-red);
+}
+

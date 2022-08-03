@@ -6,31 +6,32 @@ document.addEventListener("DOMContentLoaded", function () {
     );
   };
   const getProjLink = () => {
-    proj_root_link = location.href;
-    if (checkLnk(proj_root_link, "/settings"))
-      proj_root_link = proj_root_link.slice(0, proj_root_link.length - 9);
-    if (!checkLnk(proj_root_link, "/")) proj_root_link += "/";
-    return proj_root_link;
+    link_proj_root = location.href;
+    if (checkLnk(link_proj_root, "/settings"))
+      link_proj_root = link_proj_root.slice(0, link_proj_root.length - 9);
+    if (!checkLnk(link_proj_root, "/")) link_proj_root += "/";
+    return link_proj_root;
   };
   const setDirLink = () => {
     document.querySelector(".director-links").innerHTML =
       "Director - " +
       '<a href="' +
-      director_link +
+      link_director +
       '" target="_blank" rel="noopener noreferrer">' +
-      director_link +
+      link_director +
       "</a>";
   };
 
   const cameras = document.querySelector(".nums_input");
   let cams = 0,
     title_old = "";
-  let proj_root_link = "",
-    director_link = "";
+  let link_proj_root = "",
+    link_director = "", link_cam_root;
 
   getProjLink();
-  director_link = proj_root_link + "director";
+  link_director = link_proj_root + "director";
   setDirLink();
+  link_cam_root = link_proj_root + "camera/";
 
   const air = document.querySelector("#air");
   air.addEventListener("click", (e)=>{
@@ -83,20 +84,17 @@ document.addEventListener("DOMContentLoaded", function () {
             cams_list.splice(value, cams_list.length - value);
           else if (cams_list.length < value) {
             let newCam = null;
-            let temp_link = "";
             while (cams_list.length != value) {
               newCam = document.createElement("li");
               newCam.id = cams_list.length + 1;
-              temp_link = proj_root_link;
-              temp_link += newCam.id;
               newCam.innerHTML =
                 "Camera " +
                 newCam.id +
                 " - " +
                 '<a href="' +
-                temp_link +
+                link_cam_root+newCam.id +
                 '" target="_blank" rel="noopener noreferrer">' +
-                temp_link +
+                link_cam_root+newCam.id +
                 "</a>";
               cams_list.push(newCam);
             }

@@ -5,15 +5,15 @@ block content
 	main.loading
 		include settings-form
 		section.toCopy
-			//- ссылка на управление камерами
 			button.clipboard(title="Copy to clipboard" aria-label="Copy to clipboard")
 			div.director-links Director - 
-				a(href="https://example.com" target="_blank" rel="noopener noreferrer") https://example.com
+				//- a(href="https://example.com" target="_blank" rel="noopener noreferrer") https://example.com
 		section.toCopy
 			button.clipboard(title="Copy to clipboard" aria-label="Copy to clipboard")
 			ol.cameras_crew-links
 				//- li Camera 1 - 
 				//-     a(href="https://example.com" target="_blank" rel="noopener noreferrer") https://example.com
+		//- button.delete delete
 
 prepend footer
 	//- автоматический переход на режиссёрскую страницу - ?
