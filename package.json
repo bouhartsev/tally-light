@@ -5,12 +5,19 @@
   "scripts": {
     "start": "node ./bin/www"
   },
+  "engines": {
+    "node": "16.13.x",
+    "npm": "8.1.x"
+  },
   "dependencies": {
     "cookie-parser": "~1.4.4",
     "debug": "~2.6.9",
+    "dotenv": "^16.0.1",
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
+    "jstransformer-markdown-it": "^2.1.0",
     "morgan": "~1.9.1",
+    "pg": "^8.7.3",
     "pug": "^3.0.2",
     "socket.io": "^4.4.1",
     "utf-8-validate": "^5.0.7",

@@ -1,0 +1,116 @@
+
+.toCopy {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid var(--color-fg);
+  border-radius: 15px;
+  padding: 10px;
+  overflow: hidden;
+  margin: 1em auto;
+
+  position: relative;
+  text-align: left;
+
+  min-width: 250px;
+  width: 50%;
+  max-width: 1000px;
+}
+
+.toCopy>*:nth-child(2) {
+  margin: 0.5em auto;
+}
+
+.cameras_crew-links {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+/* @counter-style cameras-style {
+  system: extends decimal;
+  prefix: 'Camera ';
+  suffix: ' - ';
+}
+.cameras_crew-links {
+  text-align: left;
+  list-style: cameras-style;
+}
+.cameras_crew-links>* {
+  display: list-item;
+} */
+
+.clipboard {
+  margin: 0 5px 5px;
+  position: relative;
+  float: right;
+  background: transparent;
+}
+.clipboard::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  background: var(--color-bg);
+}
+.clipboard, .clipboard::after {
+  box-sizing: border-box;
+  border: 1px var(--color-fg) solid;
+  height: 25px;
+  width: 15px;
+  border-radius: 3px;
+}
+.clipboard:focus::after {
+    outline: inherit;
+}
+
+.bottom_air {
+    margin: 10px 5px;
+  height: fit-content;
+  padding-bottom: 1em;
+}
+#air {
+  --air-height: 40px;
+  display: block;
+  width: 7em;
+  height: var(--air-height);
+  background:gray;
+  z-index: 0;
+  margin: 5px auto;
+  padding: 0;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition-duration: 300ms;
+  color: inherit
+}
+#air::before {
+  content: "off";
+  text-transform: uppercase;
+  height: 80%;
+  line-height: calc(0.8 * var(--air-height));
+  vertical-align: middle;
+  width: 40%;
+  background: var(--color-fg);
+  color: var(--color-bg);
+  top: 10%;
+  left: 5%;
+  transition-duration: 300ms;
+  position: absolute;
+  z-index: 1;
+}
+#air[aria-checked="true"] {
+  background: var(--color-green);
+}
+#air[aria-checked="true"]::before {
+  content:"on";
+  left: 55%;
+}
+#air[aria-checked="true"]::after {
+  content:"autofinish at " attr(data-finish);
+  position: absolute;
+  left: 50%;
+  bottom: -1.5em;
+  transform: translateX(-50%);
+  width:fit-content;
+  white-space: nowrap;
+  pointer-events: none;
+}

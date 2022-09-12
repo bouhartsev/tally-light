@@ -14,8 +14,11 @@ body {
   color: var(--color-fg);
   text-align: center;
   position: relative;
-  margin: 0;
   touch-action: manipulation;
+
+  margin: 0 auto;
+  font-size: 16px;
+  max-width: 1000px;
 }
 
 main {
@@ -24,16 +27,6 @@ main {
 
 a {
   color: inherit;
-}
-
-.nums_input {
-  margin: 10px;
-}
-
-#save {
-  display: block;
-  margin: 20px auto;
-  font-size: 1.5em;
 }
 
 button {
@@ -46,6 +39,21 @@ button {
 
   color: var(--color-bg);
   background-color: var(--color-fg);
+}
+
+.nums_input {
+  margin: 10px;
+}
+
+#save, .delete {
+  display: block;
+  margin: 20px auto;
+  font-size: 1.5em;
+}
+
+.delete {
+  background: rgb(194, 39, 39);
+  color: var(--color-fg);
 }
 
 .loading {
@@ -100,42 +108,16 @@ button {
   }
 }
 
-.cameras {
-  margin-top: 20px;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  grid-gap: 2vw;
-  position: relative;
-}
-
-.camera {
-  display: block;
-
-  /* width: 200px;
-  height: 200px; */
-  color: var(--color-bg);
-  background: var(--color-fg);
-  font-size: calc(20px + 2vw);
-
-  opacity: 0.9;
-  /* margin: 20px; */
-
-  padding: 25px 20px;
-}
-.camera:hover {
-  opacity: 1;
-}
-
 .preview, .onair {
-  color: var(--color-fg);
-  position: relative;
+  color: var(--color-fg) !important;
+  /* position: relative; */
 }
 
 .preview {
-  background: var(--color-green);
+  background: var(--color-green) !important;
 }
 .onair {
-  background: var(--color-red);
+  background: var(--color-red) !important;
 }
 
 .not-connected {
@@ -156,6 +138,10 @@ button {
   flex-wrap: wrap;
 }
 
+footer {
+  box-shadow: 0px -10px 20px -10px var(--color-bg);
+}
+
 .status, .copyright {
 	white-space: nowrap;
 }
@@ -165,28 +151,6 @@ button {
 } */
 .name_result:not(:empty)::before {
   content: 'Actual title: ';
-}
-
-.bottom_action {
-  margin: 10px 5px;
-  height: 50px;
-  padding: 0 20px;
-  text-transform: uppercase;
-}
-
-.centered {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-
-  overflow: hidden;
-  box-sizing: border-box;
-  width: 100%;
-  height: 100vh;
-  position: absolute;
-
-  font-size: 5vw;
 }
 
 .not-exist, .disconnected {
@@ -202,74 +166,7 @@ button {
 .disconnected::after {
   content: " is disconnected";
 }
-.preview h2::after {
-  content: "preview";
-}
-.onair h2::after {
-  content: "on air";
-}
 
 .error {
   color: var(--color-orange);
-}
-
-.toCopy {
-  background: rgba(0, 0, 0, 0.3);
-  border: 2px solid var(--color-fg);
-  border-radius: 15px;
-  padding: 10px;
-  overflow: hidden;
-  margin: 1em auto;
-
-  position: relative;
-  text-align: left;
-
-  min-width: 250px;
-  width: 50%;
-  max-width: 1000px;
-}
-
-.toCopy>*:nth-child(2) {
-  margin: 0.5em auto;
-}
-
-.cameras_crew-links {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-/* @counter-style cameras-style {
-  system: extends decimal;
-  prefix: 'Camera ';
-  suffix: ' - ';
-}
-.cameras_crew-links {
-  text-align: left;
-  list-style: cameras-style;
-}
-.cameras_crew-links>* {
-  display: list-item;
-} */
-
-
-.clipboard {
-  margin: 0 5px 5px;
-  position: relative;
-  float: right;
-  background: transparent;
-}
-.clipboard::after {
-  content: '';
-  position: absolute;
-  top: 5px;
-  left: 5px;
-  background: var(--color-bg);
-}
-.clipboard, .clipboard::after {
-  box-sizing: border-box;
-  border: 1px var(--color-fg) solid;
-  height: 25px;
-  width: 15px;
-  border-radius: 3px;
 }

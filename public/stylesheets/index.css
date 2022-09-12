@@ -1,0 +1,150 @@
+main {
+    text-align: initial;
+}
+
+h1 {
+    font-size: 2.5rem;
+    --logo-diameter: 1em;
+    position: relative;
+}
+
+h1::before, h1::after {
+    content: "";
+    display: inline-block;
+
+    /* top: 0; left: 0; bottom: 0; right: 0; */
+    /* margin: auto; */
+    
+    z-index: 2;
+
+    width: var(--logo-diameter);
+    height: var(--logo-diameter);
+  
+    border-radius: 100%;
+}
+h1::before {
+    float: right;
+    margin: 0.1em var(--logo-diameter);
+    background: var(--color-red);
+}
+h1::after {
+    position: absolute;
+    animation: logo-anim 1.6s infinite linear;
+}
+
+@keyframes logo-anim {
+    0%, 20% {
+        width: var(--logo-diameter);
+        height: var(--logo-diameter);
+        top: 0.1em;
+        right: var(--logo-diameter);
+    }
+    0% {
+        box-shadow: inset 0 0 0 0px var(--color-bg), 0 0 0 0px var(--color-red);
+    }
+    20% {
+        box-shadow: inset 0 0 0 0px var(--color-bg), 0 0 0 calc(0.2 * var(--logo-diameter)) var(--color-red);
+    }
+    100% {
+        width: calc(var(--logo-diameter) * 2);
+        height: calc(var(--logo-diameter) * 2);
+        box-shadow: inset 0 0 0 var(--logo-diameter) var(--color-bg), 0 0 calc(- 2 * var(--logo-diameter)) calc(0.2 * var(--logo-diameter)) var(--color-red);
+        top: calc((0.1em - var(--logo-diameter)) / 2);
+        right:  calc(var(--logo-diameter) / 2);
+    }
+}
+
+h1 + p {
+    display: none;
+    visibility: hidden;
+}
+
+a[href$="/new"] {
+    display: block;
+    color: var(--color-fg);
+    padding: 20px;
+    text-decoration: none;
+    margin: auto;
+    text-align: center;
+    width: fit-content;
+    position: relative;
+    overflow: hidden;
+}
+
+a[href$="/new"]::before {
+    z-index: -2;
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: calc(100% + 40px);
+    height: calc(100% + 40px);
+    will-change: transform;
+    transform-origin: top left;
+    background: linear-gradient(45deg, var(--color-red) 0%, transparent 50%);   
+    animation: rotate360 4s infinite linear;
+}
+
+a[href$="/new"]::after {
+    z-index: -1;
+    content: "";
+    position: absolute;
+    left: 3px;
+    top: 3px;
+    right: 3px;
+    bottom: 3px;
+    background: var(--color-bg);
+    box-shadow: inset 0 0 3px var(--color-red);
+    transition-duration: .2s;
+}
+
+a[href$="/new"]:hover {
+    color: var(--color-fg);
+    overflow: visible;
+}
+a[href$="/new"]:hover::after {
+    background: var(--color-red);
+    box-shadow: 0 0 20px 3px var(--color-red);
+}
+a[href$="/new"]:hover::before {
+    opacity: 0;
+}
+
+@keyframes rotate360 {
+    0% {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  
+
+summary {
+    color: transparent;
+    cursor: pointer;
+    user-select: none;
+    position: relative;
+}
+
+summary::before {
+    content: "\25BC  read more \25BC";
+
+    display: block;
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: var(--color-fg);
+}
+
+details[open] summary::before {
+    content: "\25B2  read less \25B2" ;
+}
+
+em {
+    font-style: inherit;
+    color: var(--color-red);
+}
+

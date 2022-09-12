@@ -11,7 +11,10 @@ block content
 		- servName = true
 
 prepend footer
-	button#reset.bottom_action No camera
+	button#reset_camera No camera
 
 prepend scripts
 	script(src="/javascripts/director.js",defer)
+
+append head
+	link(rel='stylesheet' href='/stylesheets/director.css')
