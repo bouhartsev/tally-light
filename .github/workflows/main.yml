@@ -26,7 +26,7 @@ jobs:
         with:
           python-version: 3.8.1
 
-      - uses: gigalixir/gigalixir-action@0.6.1
+      - uses: gigalixir/gigalixir-action@v0.6.1
         with:
           GIGALIXIR_APP: tally-lights
           # GIGALIXIR_CLEAN: true # defaults to false
