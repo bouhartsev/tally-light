@@ -1,0 +1,39 @@
+name: CI/CD
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  deploy:
+  needs: test # Will only run if the test job succeeds
+  if: github.ref == 'refs/heads/main' # Only run this job if it is on the main branch
+
+  runs-on: ubuntu-latest
+
+  steps:
+    - uses: actions/checkout@v2
+      with:
+        ref: main # Check out main instead of the latest commit
+        fetch-depth: 0 # Checkout the whole branch
+        
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.8.1
+        
+    - uses: mhanberg/gigalixir-action@0.6.1
+      with:
+        GIGALIXIR_APP: tally-lights
+        # GIGALIXIR_CLEAN: true # defaults to false
+        GIGALIXIR_USERNAME: ${{ secrets.GIGALIXIR_USERNAME }}
+        GIGALIXIR_PASSWORD: ${{ secrets.GIGALIXIR_PASSWORD }}
+        MIGRATIONS: false  # defaults to true
+        SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
