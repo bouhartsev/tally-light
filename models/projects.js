@@ -95,7 +95,7 @@ module.exports = {
       (x) => arr_fields.includes(x) && (x in projects[title])
     );
     if (!fields.length) {
-      console.log("DB: Nothing to save!");
+      // console.log("DB: Nothing to save!");
       return false;
     }
     let vals = fields.map((k) => projects[title][k]);
@@ -112,7 +112,9 @@ module.exports = {
       "') ON CONFLICT (title) DO UPDATE SET " +
       q_string.slice(0, -2) +
       ";";
-    db.query(q_string, []).then(res=>console.log("DB: saved")).catch((err) => console.error(err));
+    db.query(q_string, [])
+      // .then(res=>console.log("DB: saved"))
+      .catch((err) => console.error(err));
     return true;
   },
   setStatic: function (url_arr) {
