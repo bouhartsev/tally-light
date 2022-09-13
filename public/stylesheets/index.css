@@ -113,6 +113,7 @@ a[href$="/new"]:hover::after {
 }
 a[href$="/new"]:hover::before {
     opacity: 0;
+    /* display: none; */
 }
 
 @keyframes rotate360 {
