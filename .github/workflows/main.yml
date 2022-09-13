@@ -4,14 +4,15 @@ on:
   push:
     branches: [main]
     paths-ignore: ['.**']
-  pull_request:
-    types: [closed]
-    branches: [main]
-    paths-ignore: ['.**']
+  # pull_request:
+  #   types: [closed]
+  #   branches: [main]
+  #   paths-ignore: ['.**']
   workflow_dispatch:
 
 jobs:
   deploy:
+    # if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
 
     steps:
