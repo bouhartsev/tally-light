@@ -12,9 +12,20 @@ var app = express();
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
 
-app.use(logger("tiny", {
-  skip: function (req, res) { return res.statusCode < 400 }
-}));
+if (process.env.ALLOWED_HOSTS) {
+  const allowed_arr = process.env.ALLOWED_HOSTS.split(",");
+  app.use(function (req, res, next) {
+    if (!allowed_arr.includes(req.hostname)) res.redirect(301, "//"+allowed_arr[0]);
+    else next();
+  });
+}
+app.use(
+  logger("tiny", {
+    skip: function (req, res) {
+      return res.statusCode < 400;
+    },
+  })
+);
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
