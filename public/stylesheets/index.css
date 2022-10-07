@@ -69,7 +69,9 @@ a[href$="/new"] {
     text-decoration: none;
     margin: auto;
     text-align: center;
-    width: fit-content;
+    width: max-content;
+    min-width: fit-content;
+    max-width: 100%;
     position: relative;
     overflow: hidden;
 }
