@@ -98,7 +98,7 @@
   z-index: 1;
 }
 #air[aria-checked="true"] {
-  background: var(--color-green);
+  background: var(--color-red);
 }
 #air[aria-checked="true"]::before {
   content:"on";
