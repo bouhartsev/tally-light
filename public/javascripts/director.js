@@ -15,12 +15,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
     document.querySelectorAll(".camera").forEach(addClick);
 
-    document.querySelector("#change").addEventListener('click', function(event) {
-        let cams_temp = parseInt(document.querySelector("input").value);
-        if ((cams_temp || cams_temp===0) && cams_temp!=cams) {
-            if (cams_temp>=0 && cams_temp<=255) send("quantity", cams_temp);
-        }
-    });
+    // document.querySelector("#change").addEventListener('click', function(event) {
+    //     let cams_temp = parseInt(document.querySelector("input").value);
+    //     if ((cams_temp || cams_temp===0) && cams_temp!=cams) {
+    //         if (cams_temp>=0 && cams_temp<=255) send("quantity", cams_temp);
+    //     }
+    // });
 
     document.querySelector("#reset_camera").addEventListener('click', function(event) {
         // check is any preview or onair !!
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", function() {
     setData = function (key, value) {
         if (key=="quantity") {
             if (value!=cams) {
-                document.querySelector("input").value = value;
+                // document.querySelector("input").value = value;
                 
                 if (cams>value) {
                     while(cams!=value) {
