@@ -3,7 +3,7 @@
 [![Website](https://img.shields.io/website?down_color=%23EC7C26&down_message=offline&label=website&up_message=online&url=http%3A%2F%2Ftally-lights.bouhartsev.top%2F)](https://tally-lights.bouhartsev.top/ "Go to Tally Lights")
 [![Website](https://img.shields.io/badge/made%20by-bouhartsev-%23E8252F)](https://bouhartsev.top/ "Go to bouhartsev.top")
 
-Tally Lights is an online service for interaction between the broadcast director and cameramen. With Tally Lights Online, you can inform a camera operator that his camera is on air, without any additional equipment.
+Tally Lights is a free online service for interaction between the broadcast director and cameramen. With Tally Lights Online, you can inform a camera operator that his camera is on air, without any additional equipment.
 
 [CREATE PROJECT](https://tally-lights.bouhartsev.top/new "Create Tallу Lights project")
 
@@ -49,7 +49,7 @@ Live mode allows to connect (or disconnect) all participants. It is made for the
 
 ### Video tutorial
 
-Coming soon
+Coming soon (or not)
 <!-- iframe -->
 
 </details>
